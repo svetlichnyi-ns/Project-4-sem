@@ -1,6 +1,6 @@
 This project is dedicated to demonstration of different ways to calculate the number pi. The presented methods, leading to its computation, are as follows:
 1) Monte Carlo methods:
-1.1) Buffon's needle problem. It will be accompanied with a graphic interpretation, and the user may choose concrete values of parameters (needle's length and width, distance between adjacent lines in the field, number of thrown needles) and to trace the dependence of the calculation accuracy on the aforementioned parameters. 
+1.1) Buffon's needle problem. It will be accompanied with a graphic interpretation, and the user may choose concrete values of parameters (needle's length and width, distance between adjacent lines in the field, number of thrown needles) and to trace the dependence of the calculation accuracy on the aforementioned parameters.
 1.2) Method of uniformly scattering a particular number of points over the square, which is circumscribed about a circle. It's also feasible to repeat the same experiment with other regular polygons.
 2) Atlantic City method for computing pi.
 3) Computation of pi via colliding blocks (including its graphic demonstration).
