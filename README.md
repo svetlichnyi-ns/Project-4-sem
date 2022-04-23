@@ -16,4 +16,4 @@ This project is dedicated to demonstration of different ways to calculate the nu
 6.2) Bailey–Borwein–Plouffe formula (computation of N'th digit without calculating previous ones);  
 6.3) Pi approximation using the Mandelbrot set.  
 
-For graphic demonstartion of some above-mentioned algorithms, the library SFML is going to be used.
+The lprogramming language, used in this project, is C++. For graphic demonstartion of some above-mentioned algorithms, the library SFML is going to be used.
