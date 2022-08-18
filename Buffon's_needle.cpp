@@ -8,17 +8,19 @@
 #include <cmath>
 
 int main() {
-  sf::RenderWindow window;
-
   float width;
   std::cout << "Enter the interval between neighbouring lines: ";
   std::cin >> width;
   int N_of_lines = static_cast<int>(1080.f / width) + 1;  // calculate the number of lines, based on the distance between adjacent ones
 
   sf::VertexArray lines(sf::Lines, 2*N_of_lines);  // create an array of vertices, forming lines
-  for (int i = 0; i < N_of_lines; i++) {  // draw lines on a plane
-    lines[2*i].position = sf::Vector2f(0, width*i);
-    lines[2*i + 1].position = sf::Vector2f(1920.f, width*i);
+  lines[0].position = sf::Vector2f(0.f, 0.f);
+  lines[1].position = sf::Vector2f(1920.f, 0.f);
+  for (int i = 1; i < N_of_lines; i++) {  // draw lines on a plane
+    lines[2*i].position.x = 0.f;
+    lines[2*i].position.y = lines[2*i - 2].position.y + width;
+    lines[2*i + 1].position.x = 1920.f;
+    lines[2*i + 1].position.y = lines[2*i - 1].position.y + width;
   }
   for (int i = 0; i < 2*N_of_lines; i++)
     lines[i].color = sf::Color::Blue;
@@ -50,25 +52,25 @@ int main() {
 
   int count = 0;  // the number of intersections of needles and lines
   for (int j = 0; j < N_of_needles; j++) {
-    angles[j] = static_cast<float> (rand()) / (RAND_MAX / 2.f / 3.14159265358979f);  // randomly choose an angle for each thrown needle
-    X[j] = static_cast<float> (rand()) / (RAND_MAX / 1920.f);  // randomly choose an abscissa for the "left end" of each thrown needle
-    Y[j] = static_cast<float> (rand()) / (RAND_MAX / 1080.f);  // randomly choose an ordinate for the "left end" of each thrown needle
+    angles[j] = 2.f * 3.14159265358979f * static_cast <float> (rand()) / static_cast <float> (RAND_MAX);  // randomly choose an angle for each thrown needle
+    X[j] = 1920.f * static_cast <float> (rand()) / static_cast <float> (RAND_MAX);  // randomly choose an abscissa for the "left end" of each thrown needle
+    Y[j] = 1080.f * static_cast <float> (rand()) / static_cast <float> (RAND_MAX);  // randomly choose an ordinate for the "left end" of each thrown needle
     needles[2*j].position = sf::Vector2f(X[j], Y[j]);
     needles[2*j].color = sf::Color::Black;
     needles[2*j + 1].position = sf::Vector2f(X[j] + length * std::cos(angles[j]), Y[j] + length * std::sin(angles[j]));  // the position of the "right end" of a needle is determined by the position of its "left end", the needle's length and its angle
     needles[2*j + 1].color = sf::Color::Black;
     // if a thrown needle crosses any line, it becomes red; otherwise, it stays black
     for (int i = 0; i < N_of_lines; i++)
-      if (((width*i > needles[2*j].position.y) && (width*i < needles[2*j + 1].position.y)) || ((width*i < needles[2*j].position.y) && (width*i > needles[2*j + 1].position.y))) {
+      if ((((float) i * width > needles[2*j].position.y) && ((float) i * width < needles[2*j + 1].position.y)) || (((float) i * width < needles[2*j].position.y) && ((float) i * width > needles[2*j + 1].position.y))) {
         needles[2*j].color = sf::Color::Red;
         needles[2*j + 1].color = sf::Color::Red;
         count++;
       }
     }
-    std::cout.precision(10);
-    std::cout << "Number PI is: " << (float) 2*length/width/count*N_of_needles << std::endl;
+    // calculate number pi, based on the probability for each needle to cross any line and on current geometrical parameters
+    std::cout << "Number PI is: " << std::setprecision(10) << 2.f * length / width / (float) count * (float) N_of_needles << std::endl;
 
-    window.create(sf::VideoMode(1920, 1080), "Buffon's needle");
+    sf::RenderWindow window(sf::VideoMode(1920, 1080), "Buffon's needle");
     while (window.isOpen()) {
       sf::Event event;
       while (window.pollEvent(event)) {
