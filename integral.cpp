@@ -168,7 +168,7 @@ int usage_of_method (uint8_t method, long double a, long double b, unsigned long
       return -1;
   }
   std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();  // start the timer
-  // in the context of methods 0-5, N is the number of segments of integration; in the 6th method, it's the number of scattered points
+  // in the context of methods 0-4 and 6: N is the number of segments of integration; in the 7th method, it's the number of scattered points
   if (Integral(method, a, b, N, func) == -1)
     return -1;
   long double pi = Integral(method, a, b, N, func);
