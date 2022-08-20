@@ -5,6 +5,7 @@
 #include <iomanip>
 #include <cstdlib>
 #include <cstdio>
+#include <chrono>
 #include <cmath>
 
 int main() {
@@ -50,6 +51,7 @@ int main() {
     return -1;
   }
 
+  std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();  // start the timer
   int count = 0;  // the number of intersections of needles and lines
   for (int j = 0; j < N_of_needles; j++) {
     angles[j] = 2.f * 3.14159265358979f * static_cast <float> (rand()) / static_cast <float> (RAND_MAX);  // randomly choose an angle for each thrown needle
@@ -67,8 +69,10 @@ int main() {
         count++;
       }
     }
+    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();  // stop the timer
     // calculate number pi, based on the probability for each needle to cross any line and on current geometrical parameters
-    std::cout << "Number PI is: " << std::setprecision(10) << 2.f * length / width / (float) count * (float) N_of_needles << std::endl;
+    std::cout << "Number PI is: " << std::setprecision(10) << 2.f * length / width / (float) count * (float) N_of_needles;
+    std::cout << "; it took " << (std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count()) / 1000000.l << " seconds to calculate it.\n";
 
     sf::RenderWindow window(sf::VideoMode(1920, 1080), "Buffon's needle");
     while (window.isOpen()) {
@@ -82,7 +86,7 @@ int main() {
       window.draw(needles);
       window.display();
     }
-    // free an allocated memory
+    // free allocated memory
     free(angles);
     free(X);
     free(Y);
