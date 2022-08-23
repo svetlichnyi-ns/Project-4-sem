@@ -37,6 +37,10 @@ long double function_2 (long double x) {
   return 6.l / sqrtl(1.l - powl(x, 2.l));
 }
 
+long double function_3 (long double x) {
+  return 2.l * sqrtl(1.l - powl(x, 2.l));
+}
+
 long double Integral (uint8_t method, long double a, long double b, unsigned long N, const std::function<long double (long double)> &func) {
   const long double length = (b - a) / N;  // the length of each segment of integration
   long double integral = 0.l;  // an initial value of the integral
@@ -83,7 +87,7 @@ long double Integral (uint8_t method, long double a, long double b, unsigned lon
       break;
     case 5:  // Romberg's method
     {
-      std::vector<std::vector<long double>> Romberg_integral(10, std::vector<long double> (10));  // the implementation of a square lower-triangular matrix
+      std::vector<std::vector<long double>> Romberg_integral(30, std::vector<long double> (30));  // the implementation of a square lower-triangular matrix
       Romberg_integral.front().front() = Integral(3, a, b, 1, func);  // trapezoidal integral (method 3)
       long double Romberg_length = b - a;  // current length of the segment of integration
       for (unsigned long int step = 1; step < Romberg_integral.size(); step++) {
@@ -100,12 +104,12 @@ long double Integral (uint8_t method, long double a, long double b, unsigned lon
           Romberg_integral[step][rbStep] = (k * Romberg_integral[step][rbStep - 1] - Romberg_integral[step - 1][rbStep - 1]) / (k - 1);
         }
       }
-      return Romberg_integral[9][9];  // the result contains in the lower right corner of the lower-triangular matrix
+      return Romberg_integral[29][29];  // the result contains in the lower right corner of the lower-triangular matrix
     }
     case 6:  // one-dimensional Monte Carlo method
       for (long unsigned int step = 0; step < N; step++) {
         // choose an arbitrary abscissa on each interval of integration
-        const long double x_random = (long double) step * length + length * static_cast <long double> (rand()) / static_cast <long double> (RAND_MAX);
+        const long double x_random = a + (long double) step * length + length * static_cast <long double> (rand()) / static_cast <long double> (RAND_MAX);
         integral += func(x_random);
       }
       integral *= length;
@@ -191,6 +195,11 @@ int main() {
   std::cout << "The second integral expression" << std::endl;
   for (uint8_t i = 0; i < methods.size(); i++) {
     if (usage_of_method(methods.at(i), 0.l, 0.5l, 100'000'000, function_2) == -1)
+      return -1;
+  }
+  std::cout << "The third integral expression" << std::endl;
+  for (uint8_t i = 0; i < methods.size(); i++) {
+    if (usage_of_method(methods.at(i), -1.l, 1.l, 100'000'000, function_3) == -1)
       return -1;
   }
   return 0;
