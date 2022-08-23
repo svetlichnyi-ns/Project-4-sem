@@ -13,18 +13,18 @@ int main() {
 
   RectangleShape square(Vector2f(800.f, 800.f));  // creating a square
   square.setOrigin(Vector2f(square.getSize().x / 2, square.getSize().y / 2));
-  square.setPosition(Vector2f(window.getSize().x / 2, window.getSize().y / 2));
+  square.setPosition(Vector2f(static_cast<float>(window.getSize().x / 2), static_cast<float>(window.getSize().y / 2)));
   square.setOutlineThickness(10.f);
   square.setOutlineColor(Color::Yellow);
   window.draw(square);
 
-  RectangleShape patch(Vector2f(window.getSize().x, 80.f));  // creating a black patch at the top of the screen: without it, previous inscriptions would overlap each other
+  RectangleShape patch(Vector2f(static_cast<float>(window.getSize().x), 80.f));  // creating a black patch at the top of the screen: without it, previous inscriptions would overlap each other
   patch.setPosition(Vector2f(0.f, 0.f));
   patch.setFillColor(Color::Black);
 
   CircleShape circle;  // creating a circle
   circle.setOrigin(Vector2f(square.getSize().x / 2, square.getSize().y / 2));
-  circle.setPosition(Vector2f(window.getSize().x / 2, window.getSize().y / 2));
+  circle.setPosition(Vector2f(static_cast<float>(window.getSize().x / 2), static_cast<float>(window.getSize().y / 2)));
   circle.setOutlineThickness(2.f);
   circle.setRadius(square.getSize().x / 2 - circle.getOutlineThickness());
   circle.setOutlineColor(Color::Black);
@@ -53,8 +53,8 @@ int main() {
 
     CircleShape point(2.f, 100000);  // we actually draw not points, but tiny circles, so that they are seen for us
     point.setOrigin(point.getRadius(), point.getRadius());
-    point.setPosition(Vector2f((float) (window.getSize().x / 2) - square.getSize().x / 2 + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / square.getSize().x)),
-                              (float) (window.getSize().y / 2) - square.getSize().y / 2 + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / square.getSize().y))));
+    point.setPosition(Vector2f((float) (window.getSize().x / 2) - square.getSize().x / 2 + square.getSize().x * static_cast<float>(rand()) / static_cast<float>(RAND_MAX),
+                              (float) (window.getSize().y / 2) - square.getSize().y / 2 + square.getSize().y * static_cast<float>(rand()) / static_cast<float>(RAND_MAX)));
     if (pow(square.getPosition().x - point.getPosition().x, 2.f) + pow(square.getPosition().y - point.getPosition().y, 2.f) <= pow(circle.getRadius() + circle.getOutlineThickness(), 2.f)) {
       point.setFillColor(Color::Blue);  // if the point occurs inside the circle or on its border, it becomes blue
       blue_points++;
