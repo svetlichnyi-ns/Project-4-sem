@@ -68,16 +68,16 @@ int main() {
   std::cout << "; it took " << (std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count()) / 1'000'000'000.l << " seconds to calculate it.\n";
 
   sf::RenderWindow window(sf::VideoMode(1920, 1080), "Buffon's needle");
+  window.clear(sf::Color::White);
+  window.draw(lines);
+  window.draw(needles);
+  window.display();
   while (window.isOpen()) {
     sf::Event event;
     while (window.pollEvent(event)) {
       if (event.type == sf::Event::Closed)
         window.close();
     }
-    window.clear(sf::Color::White);
-    window.draw(lines);
-    window.draw(needles);
-    window.display();
   }
   return 0;
 }
