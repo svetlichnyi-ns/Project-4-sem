@@ -1,71 +1,79 @@
 #include <iostream>
 #include <iomanip>
 #include <vector>
-#include <stdint.h>
+#include <stdio.h>
 #include <omp.h>
-#include <math.h>
+#include <cmath>
 
-using namespace std;
-
-void calculation_of_pi (unsigned int way, uint64_t N) {
-  long double pi = 0;  // initial value for addition
-  long double pi_Wallis = 1;  // initial value for multiplication
+int calculation_of_pi (int way, int N) {
+  if (!((way == 0) || (way == 1) || (way == 2) || (way == 3) || (way == 4))) {
+    std::cerr << "Undefined method\n";
+    return -1;
+  }
+  long double pi = 0.l;  // initial value for addition
+  long double pi_Wallis = 1.l;  // initial value for multiplication
   long double start = omp_get_wtime();  // the beginning of the algorithm
   #pragma omp parallel reduction(+:pi)
   {
     #pragma omp parallel for
-    for (uint64_t i = 0; i < N; i++) {  // "N" is the number of terms, forming number pi
+    for (int i = 0; i < N; i++) {
       switch (way) {   // there're several series, approximating number pi
-        case 0:  // the Gregory-Leibniz series
-          pi += pow(-1.0, i) / (2.0 * i + 1.0);
+        case 0:  // Gregory-Leibniz series
+          pi += powl(-1.l, i) / (2.l * i + 1.l);
           break;
-        case 1:  // the Madhava series
-          pi += pow(-1.0, i) / (2.0 * i + 1.0) / pow(3.0, i);
+        case 1:  // Madhava series
+          pi += powl(-1.l, i) / (2.l * i + 1.l) / powl(3.l, i);
           break;
-        case 2:  // the Nilakantha series
-          pi += pow(-1.0, i) / (2.0 * i + 2.0) / (2.0 * i + 3.0) / (2.0 * i + 4.0);
+        case 2:  // Nilakantha series
+          pi += powl(-1.l, i) / (2.l * i + 2.l) / (2.l * i + 3.l) / (2.l * i + 4.l);
           break;
-        case 3:  // the Euler series
-          pi += 1.0 / pow(i + 1.0, 2.0);
+        case 3:  // Euler series
+          pi += 1.l / powl(i + 1.l, 2.l);
           break;
-        case 4:  // the Wallis' formula
-          pi_Wallis *= pow((2.0 * i + 2.0), 2.0) / (2.0 * i + 1.0) / (2.0 * i + 3.0);
+        case 4:  // Wallis' formula
+          pi_Wallis *= powl((2.l * i + 2.l), 2.l) / (2.l * i + 1.l) / (2.l * i + 3.l);
+          break;
+        default:
           break;
       }
     }
   }
   long double end = omp_get_wtime();  // the end of the algorithm
+  std::cout << "The value of number PI for the first ";
+  std::cout << std::setprecision(15);
   switch (way) {
     case 0:
-      cout << "Значение pi для первых " << N << " слагаемых по формуле Грегори-Лейбница: " << setprecision(11) << 4.0 * pi << endl;
-      cout << "Время по формуле Грегори-Лейбница: " << setprecision(6) << end - start << endl;
+      std::cout << N << " terms of Gregory-Leibniz series: " << 4.l * pi;
       break;
     case 1:
-      cout << "Значение pi для первых " << N << " слагаемых по формуле Мадхавы: " << setprecision(11) << sqrtl(12.0) * pi << endl;
-      cout << "Время по формуле Мадхавы: " << setprecision(6) << end - start << endl;
+      std::cout << N << " terms of Madhava series: " << sqrtl(12.l) * pi;
       break;
     case 2:
-      cout << "Значение pi для первых " << N + 1 << " слагаемых по формуле Нилаканта: " << setprecision(11) << 4.0 * pi + 3.0 << endl;
-      cout << "Время по формуле Нилаканта: " << setprecision(6) << end - start << endl;
+      std::cout << N + 1 << " terms of Nilakantha series: " << 4.l * pi + 3.l;
       break;
     case 3:
-      cout << "Значение pi для первых " << N << " слагаемых по формуле Эйлера: " << setprecision(11) << sqrtl(6.0 * pi) << endl;
-      cout << "Время по формуле Эйлера: " << setprecision(6) << end - start << endl;
+      std::cout << N << " terms of Euler series: " << sqrtl(6.l * pi);
       break;
     case 4:
-      cout << "Значение pi для первых " << 2 * N + 1 << " множителей по формуле Валлиса: " << setprecision(11) << 2 * pi_Wallis << endl;
-      cout << "Время по формуле Валлиса: " << setprecision(6) << end - start << endl;
+      std::cout << 2*N + 1 << " factors in Wallis' formula: " << 2.l * pi_Wallis;
+      break;
+    default:
       break;
   }
-  return;
+  std::cout << "\nIt took " << std::setprecision(6) << end - start << " seconds to calculate PI.\n";
+  return 0;
 }
 
 int main() {
-  vector<unsigned int> ways = {0, 1, 2, 3, 4};  // vector of ways of calculation of pi
-  for (uint8_t j = 0; j < ways.size(); j++) {
-    for (uint64_t i = 10; i < 10000000; i = i * 10)
-      calculation_of_pi(ways.at(j), i);
-    cout << endl;
+  std::vector<int> ways = {};  // vector of ways of calculation of pi
+  for (int i = 0; i < 5; i++)
+    ways.push_back(i);
+  for (int j = 0; j < (int) ways.size(); j++) {
+    for (int i = 10; i < 1'000'000'000; i *= 10) {
+      if (calculation_of_pi(ways.at(j), i) == -1)
+        return -1;
+    }
+    std::cout << '\n';
   }
   return 0;
 }
