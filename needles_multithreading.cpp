@@ -108,7 +108,6 @@ int main() {
   // new size of the array of vertices, forming needles
   needles.resize(2*NumOfNeedles);
   int NumOfNeedlesPerThread = NumOfNeedles / NumOfThreads;  // the number of needles that each individual thread must scatter
-  
   // create an array of threads' identificators
   pthread_t* threads = (pthread_t*) malloc (NumOfThreads * sizeof(pthread_t));
   if (threads == NULL) {
@@ -153,7 +152,34 @@ int main() {
       return -1;
     }
   }
-
+  
+  // scatter the remaining needles (if NumOfNeedles isn't evenly divisible by NumOfThreads)
+  if (NumOfNeedles % NumOfThreads != 0) {
+    pthread_t remaining_needles;
+    Args RemainingNeedles;
+    RemainingNeedles.st_from = NumOfThreads * NumOfNeedlesPerThread;
+    RemainingNeedles.st_to = NumOfNeedles;
+    RemainingNeedles.st_length = length;
+    RemainingNeedles.st_width = width;
+    RemainingNeedles.st_NumOfLines = NumOfLines;
+    if (pthread_create(&remaining_needles, NULL, spreader, &RemainingNeedles) != 0) {
+      std::cerr << "Failed to create a thread!\n";
+      free(threads);
+      free(ArrayOfStructures);
+      return -1;
+    }
+    if (RemainingNeedles.st_error == true) {
+      free(threads);
+      free(ArrayOfStructures);
+      return -1;
+    }
+    if (pthread_join(remaining_needles, NULL) != 0) {
+      std::cerr << "Failed to join a thread!\n";
+      free(threads);
+      free(ArrayOfStructures);
+      return -1;
+    }
+  }
   std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();  // stop the timer
   // calculate number pi, based on the probability for each needle to cross any line and on current geometrical parameters
   std::cout << "Number PI is: " << std::setprecision(15) << 2.f * length / width / (float) count * (float) NumOfNeedles;
