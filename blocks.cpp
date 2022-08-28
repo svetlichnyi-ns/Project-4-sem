@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <iostream>
+#include <iomanip>
 #include <sstream>
 #include <assert.h>
 #include <cmath>
@@ -110,13 +111,13 @@ int main() {
   text.setString ("Number of collisions: " + initial_inscription.str());
 
   sf::Clock clock;  // start the timer
-  uint32_t collisions = 0;  // total number of collisions
+  int collisions = 0;  // total number of collisions
   while (window.isOpen()) {
     sf::Event event;
     while (window.pollEvent(event)) {
       if (event.type == sf::Event::Closed)
         window.close();
-      }
+    }
     window.clear();
     window.draw (ground);
     window.draw (sky);
@@ -173,5 +174,7 @@ int main() {
     }
   }
   std::cout << "Collisions: " << collisions << std::endl;
+  std::cout << "Number PI in its " << (int) log10(mass_2 / mass_1) / 2 + 1 << "th approximation is equal to: ";
+  std::cout << std::setprecision((int) log10(mass_2 / mass_1) / 2 + 1) << (float) collisions / sqrtf((float) (mass_2 / mass_1)) << std::endl;
   return 0;
 }
