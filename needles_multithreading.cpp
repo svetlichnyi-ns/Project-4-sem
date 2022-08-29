@@ -9,6 +9,8 @@
 #include <chrono>
 #include <cmath>
 
+#define PI_25_DIGITS 3.141592653589793238462643
+
 int count = 0;  // the number of intersections of needles and lines
 sf::VertexArray needles(sf::Lines, 0);  // an array of vertices, forming needles
 pthread_mutex_t mutex;  // the presence of a critical section requires the synchronization of threads
@@ -182,8 +184,10 @@ int main() {
   }
   std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();  // stop the timer
   // calculate number pi, based on the probability for each needle to cross any line and on current geometrical parameters
-  std::cout << "Number PI is: " << std::setprecision(15) << 2.f * length / width / (float) count * (float) NumOfNeedles;
-  std::cout << "; it took " << (std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count()) / 1'000'000'000.l << " seconds to calculate it.\n";
+  long double pi = 2.f * length / width / (float) count * (float) NumOfNeedles;
+  std::cout << "Number PI is: " << std::setprecision(15) << pi << ";\n";
+  std::cout << "The calculation error is: " << fabsl(pi - PI_25_DIGITS) << ";\n";
+  std::cout << "It took " << (std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count()) / 1'000'000'000.l << " seconds to calculate it.\n";
 
   // the destroyment of the mutex
   if (pthread_mutex_destroy(&mutex) != 0) {

@@ -5,6 +5,8 @@
 #include <chrono>
 #include <cmath>
 
+#define PI_25_DIGITS 3.141592653589793238462643
+
 int main() {
   uint64_t N;  // the number of factors that make up the product
   std::cout << "Enter the number of factors in Viete's formula: ";
@@ -22,8 +24,9 @@ int main() {
     pi *= factors[i];
   }
   std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();  // stop the timer
-  std::cout << "Number PI, obtained as a product of " << N << " factors, is equal to " << std::setprecision(15) << pi << std::endl;
-  std::cout << "The calculation took " << (std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count()) / 1'000'000'000.l << " seconds\n";
+  std::cout << "Number PI, obtained as a product of " << N << " factors, is equal to: " << std::setprecision(15) << pi << ";\n";
+  std::cout << "The calculation error is: " << fabsl(pi - PI_25_DIGITS) << ";\n";
+  std::cout << "The calculation took " << (std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count()) / 1'000'000'000.l << " seconds.\n";
   free(factors);  // free allocated memory
   return 0;
 }

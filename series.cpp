@@ -5,6 +5,8 @@
 #include <omp.h>
 #include <cmath>
 
+#define PI_25_DIGITS 3.141592653589793238462643
+
 int calculation_of_pi (int way, int N) {
   if (!((way == 0) || (way == 1) || (way == 2) || (way == 3) || (way == 4))) {
     std::cerr << "Undefined method\n";
@@ -38,29 +40,34 @@ int calculation_of_pi (int way, int N) {
       }
     }
   }
-  long double end = omp_get_wtime();  // the end of the algorithm
   std::cout << "The value of number PI for the first ";
   std::cout << std::setprecision(15);
   switch (way) {
     case 0:
-      std::cout << N << " terms of Gregory-Leibniz series: " << 4.l * pi;
+      std::cout << N << " terms of Gregory-Leibniz series: " << 4.l * pi << ";\n";
+      std::cout << "The calculation error is: " << fabsl(4.l * pi - PI_25_DIGITS) << ";\n";
       break;
     case 1:
-      std::cout << N << " terms of Madhava series: " << sqrtl(12.l) * pi;
+      std::cout << N << " terms of Madhava series: " << sqrtl(12.l) * pi << ";\n";
+      std::cout << "The calculation error is: " << fabsl(sqrtl(12.l) * pi - PI_25_DIGITS) << ";\n";
       break;
     case 2:
-      std::cout << N + 1 << " terms of Nilakantha series: " << 4.l * pi + 3.l;
+      std::cout << N + 1 << " terms of Nilakantha series: " << 4.l * pi + 3.l << ";\n";
+      std::cout << "The calculation error is: " << fabsl((4.l * pi + 3.l) - PI_25_DIGITS) << ";\n";
       break;
     case 3:
-      std::cout << N << " terms of Euler series: " << sqrtl(6.l * pi);
+      std::cout << N << " terms of Euler series: " << sqrtl(6.l * pi) << ";\n";
+      std::cout << "The calculation error is: " << fabsl(sqrtl(6.l * pi) - PI_25_DIGITS) << ";\n";
       break;
     case 4:
-      std::cout << 2*N + 1 << " factors in Wallis' formula: " << 2.l * pi_Wallis;
+      std::cout << 2*N + 1 << " factors in Wallis' formula: " << 2.l * pi_Wallis << ";\n";
+      std::cout << "The calculation error is: " << fabsl(2.l * pi_Wallis - PI_25_DIGITS) << ";\n";
       break;
     default:
       break;
   }
-  std::cout << "\nIt took " << std::setprecision(6) << end - start << " seconds to calculate PI.\n";
+  long double end = omp_get_wtime();  // the end of the algorithm
+  std::cout << "It took " << std::setprecision(6) << end - start << " seconds to calculate PI.\n";
   return 0;
 }
 
