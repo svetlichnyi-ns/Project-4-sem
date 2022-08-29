@@ -88,7 +88,7 @@ void SetButton (sf::RenderWindow& window, sf::Vector2f button_position, std::str
   button.setPosition(button_position);
   
   sf::Font font;
-  font.loadFromFile ("Times_New_Roman.ttf");
+  font.loadFromFile ("fonts/Times_New_Roman.ttf");
 
   sf::Text text;
   text.setFont (font);
@@ -112,7 +112,7 @@ int main() {
   background.setSize (sf::Vector2f((float) window.getSize().x, (float) window.getSize().y));
   background.setPosition(sf::Vector2f(0.f, 0.f));
   sf::Texture background_texture;
-  background_texture.loadFromFile ("Pictures/background.jpg");
+  background_texture.loadFromFile ("pictures/background.jpg");
   background.setTexture (&background_texture);
 
   sf::RectangleShape header;
@@ -122,7 +122,7 @@ int main() {
   header.setPosition(sf::Vector2f((float) window.getSize().x / 2.f, 100.f));
 
   sf::Font font;
-  font.loadFromFile ("Times_New_Roman.ttf");
+  font.loadFromFile ("fonts/Times_New_Roman.ttf");
   sf::Text text;
   text.setFont (font);
   text.setCharacterSize (85);
@@ -302,7 +302,7 @@ void Monte_Carlo() {
   int iterations = 0;  // the total number of points, depicted on the screen
 
   sf::Font font;
-  font.loadFromFile("Project-4-sem/fonts/a_Futurica_ExtraBold.ttf");
+  font.loadFromFile("fonts/a_Futurica_ExtraBold.ttf");
 
   sf::Text text;
   text.setFont(font);
@@ -376,7 +376,7 @@ int blocks() {
   // set the position of the upper left corner of 'ground'
   ground.setPosition (sf::Vector2f(0.f, (float) window.getSize().y - ground.getSize().y));
   sf::Texture ground_texture;
-  ground_texture.loadFromFile ("Project-4-sem/pictures/ground.jpg");
+  ground_texture.loadFromFile ("pictures/ground.jpg");
   ground.setTexture (&ground_texture);
   
   sf::RectangleShape sky;
@@ -384,7 +384,7 @@ int blocks() {
   // set the position of the upper left corner of 'sky'
   sky.setPosition (sf::Vector2f(0.f, 0.f));
   sf::Texture sky_texture;
-  sky_texture.loadFromFile ("Project-4-sem/pictures/sky.jpg");
+  sky_texture.loadFromFile ("pictures/sky.jpg");
   sky.setTexture (&sky_texture);
   
   sf::RectangleShape wall;
@@ -392,7 +392,7 @@ int blocks() {
   // set the position of the upper left corner of 'wall'
   wall.setPosition (sf::Vector2f(0.f, 0.f));
   sf::Texture wall_texture;
-  wall_texture.loadFromFile ("Project-4-sem/pictures/brick.jpg");
+  wall_texture.loadFromFile ("pictures/brick.jpg");
   wall.setTexture (&wall_texture);
 
   sf::RectangleShape block_1;
@@ -435,7 +435,7 @@ int blocks() {
   }
 
   sf::Font font;
-  font.loadFromFile ("Project-4-sem/fonts/Times_New_Roman.ttf");
+  font.loadFromFile ("fonts/Times_New_Roman.ttf");
 
   sf::Text text;
   text.setFont (font);
