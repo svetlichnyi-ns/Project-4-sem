@@ -17,3 +17,21 @@ This project is dedicated to demonstration of different ways to calculate the nu
 6.3) Pi approximation using the Mandelbrot set.  
 
 The programming language, used in this project, is C++. For graphic demonstartion of some above-mentioned algorithms, the library SFML is going to be used.
+
+As a result, I created a program that supports eight methods of computation of number PI (excluding some abovementioned planned ones and including some new ones). These are:  
+1) Buffon's needle problem;  
+2) Scenario with colliding blocks;  
+3) Numerical integration;  
+4) Series summation;  
+5) Mandelbrot's set;  
+6) A spigot algorithm;  
+7) Monte-Carlo method;  
+8) Viete's formula.  
+  
+You may ignore all files in this repository, except three files (final.cpp, source.cpp, final.h) and two folders with its content (fonts, pictures). Other files demonstrate separate opportunities of this project. They were created during the work on the project and save the history of their changes.  
+Before running a project, you should install the SFML library. For example, on Linux you should write the following: sudo apt-get install libsfml-dev  
+So as to run a project, enter the following to the console:  
+g++ -c -Wextra -Wall -Wfloat-equal -Wundef -Wshadow -Wpointer-arith -Wcast-align -Wstrict-overflow=5 -Wwrite-strings -Wcast-qual -Wswitch-default -Wconversion -Wunreachable-code -g -Wuninitialized -fopenmp final.cpp  
+g++ -c -Wextra -Wall -Wfloat-equal -Wundef -Wshadow -Wpointer-arith -Wcast-align -Wstrict-overflow=5 -Wwrite-strings -Wcast-qual -Wswitch-default -Wconversion -Wunreachable-code -g -Wuninitialized -fopenmp source.cpp  
+g++ final.cpp source.cpp -lpthread -lsfml-window -lsfml-system -lsfml-graphics -lgomp -o project  
+./project  
