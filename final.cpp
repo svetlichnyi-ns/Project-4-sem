@@ -21,15 +21,15 @@
 #define PI_25_DIGITS 3.141592653589793238462643
 
 int main() {
-  sf::RenderWindow window(sf::VideoMode(1920, 1080), "Multiple windows");
+  sf::RenderWindow window(sf::VideoMode(1920, 1080), "Menu");
   window.setFramerateLimit(30);
-
+  // a picture on the background of menu
   sf::RectangleShape background;
-  background.setSize (sf::Vector2f((float) window.getSize().x, (float) window.getSize().y));
+  background.setSize(sf::Vector2f(window.getSize()));
   background.setPosition(sf::Vector2f(0.f, 0.f));
   sf::Texture background_texture;
-  background_texture.loadFromFile ("pictures/background.jpg");
-  background.setTexture (&background_texture);
+  background_texture.loadFromFile("pictures/background.jpg");
+  background.setTexture(&background_texture);
 
   sf::RectangleShape header;
   header.setSize(sf::Vector2f(1650.f, 150.f));
@@ -44,6 +44,7 @@ int main() {
   text.setCharacterSize (85);
   text.setFillColor (sf::Color::Red);
   text.setString ("Choose any method of calculation of number PI");
+  // so as to align text's and figure's centers
   sf::FloatRect textRect = text.getLocalBounds();
   text.setOrigin(textRect.left + textRect.width / 2.f, textRect.top + textRect.height / 2.f);
   text.setPosition (header.getPosition());
@@ -63,82 +64,93 @@ int main() {
     window.display();
     sf::Event event;
     while (window.pollEvent(event)) {
-      if (event.type == sf::Event::Closed) {
+      if (event.type == sf::Event::Closed)
         window.close();
-      }
+      // handling events, associated with the first button (hovering over it, pressing, moving the cursor away)
       while ((sf::Mouse::getPosition(window).x >= 100) && (sf::Mouse::getPosition(window).x <= 900) &&
-          (sf::Mouse::getPosition(window).y >= 225) && (sf::Mouse::getPosition(window).y <= 375)) {
+             (sf::Mouse::getPosition(window).y >= 225) && (sf::Mouse::getPosition(window).y <= 375)) {
           SetButton (window, sf::Vector2f(500.f, 300.f), "Buffon's needle problem", sf::Color::Blue);
           window.display();
-          sf::Event event_scattering;
-          while (window.pollEvent(event_scattering)) {
-            if (event_scattering.type == sf::Event::MouseButtonPressed) {
-              if (event_scattering.mouseButton.button == sf::Mouse::Left) {
+          while (window.pollEvent(event)) {
+            if (event.type == sf::Event::MouseButtonPressed) {
+              if (event.mouseButton.button == sf::Mouse::Left) {
                 notification(window);
-                Buffon_needle();
+                if (Buffon_needle() == -1) {  // error handling
+                  window.close();
+                  return -1;
+                }
               }
             }
           }
       }
       SetButton (window, sf::Vector2f(500.f, 300.f), "Buffon's needle problem", sf::Color::Black);
       window.display();
+      // handling events, associated with the second button (hovering over it, pressing, moving the cursor away)
       while ((sf::Mouse::getPosition(window).x >= 100) && (sf::Mouse::getPosition(window).x <= 900) &&
-          (sf::Mouse::getPosition(window).y >= 425) && (sf::Mouse::getPosition(window).y <= 575)) {
+             (sf::Mouse::getPosition(window).y >= 425) && (sf::Mouse::getPosition(window).y <= 575)) {
           SetButton (window, sf::Vector2f(500.f, 500.f), "Colliding blocks", sf::Color::Blue);
           window.display();
-          sf::Event event_blocks;
-          while (window.pollEvent(event_blocks)) {
-            if (event_blocks.type == sf::Event::MouseButtonPressed) {
-              if (event_blocks.mouseButton.button == sf::Mouse::Left) {
+          while (window.pollEvent(event)) {
+            if (event.type == sf::Event::MouseButtonPressed) {
+              if (event.mouseButton.button == sf::Mouse::Left) {
                 notification(window);
-                blocks();
+                if (blocks() == -1) {  // error handling
+                  window.close();
+                  return -1;
+                }
               }
             }
           }
       }
       SetButton (window, sf::Vector2f(500.f, 500.f), "Colliding blocks", sf::Color::Black);
       window.display();
+      // handling events, associated with the third button (hovering over it, pressing, moving the cursor away)
       while ((sf::Mouse::getPosition(window).x >= 100) && (sf::Mouse::getPosition(window).x <= 900) &&
-          (sf::Mouse::getPosition(window).y >= 625) && (sf::Mouse::getPosition(window).y <= 775)) {
+             (sf::Mouse::getPosition(window).y >= 625) && (sf::Mouse::getPosition(window).y <= 775)) {
           SetButton (window, sf::Vector2f(500.f, 700.f), "Numerical integration", sf::Color::Blue);
           window.display();
-          sf::Event event_integral;
-          while (window.pollEvent(event_integral)) {
-            if (event_integral.type == sf::Event::MouseButtonPressed) {
-              if (event_integral.mouseButton.button == sf::Mouse::Left) {
+          while (window.pollEvent(event)) {
+            if (event.type == sf::Event::MouseButtonPressed) {
+              if (event.mouseButton.button == sf::Mouse::Left) {
                 notification(window);
-                integral_computation();
+                if (integral_computation() == -1) {  // error handling
+                  window.close();
+                  return -1;
+                }  
               }
             }
           }
       }
       SetButton (window, sf::Vector2f(500.f, 700.f), "Numerical integration", sf::Color::Black);
       window.display();
+      // handling events, associated with the forth button (hovering over it, pressing, moving the cursor away)
       while ((sf::Mouse::getPosition(window).x >= 100) && (sf::Mouse::getPosition(window).x <= 900) &&
-          (sf::Mouse::getPosition(window).y >= 825) && (sf::Mouse::getPosition(window).y <= 975)) {
+             (sf::Mouse::getPosition(window).y >= 825) && (sf::Mouse::getPosition(window).y <= 975)) {
           SetButton (window, sf::Vector2f(500.f, 900.f), "Series summation", sf::Color::Blue);
           window.display();
-          sf::Event event_series;
-          while (window.pollEvent(event_series)) {
-            if (event_series.type == sf::Event::MouseButtonPressed) {
-              if (event_series.mouseButton.button == sf::Mouse::Left) {
+          while (window.pollEvent(event)) {
+            if (event.type == sf::Event::MouseButtonPressed) {
+              if (event.mouseButton.button == sf::Mouse::Left) {
                 notification(window);
-                series();
+                if (series() == -1) {  // error handling
+                  window.close();
+                  return -1;
+                }
               }
             }
           }
       }
       SetButton (window, sf::Vector2f(500.f, 900.f), "Series summation", sf::Color::Black);
       window.display();
+      // handling events, associated with the fifth button (hovering over it, pressing, moving the cursor away)
       while ((sf::Mouse::getPosition(window).x >= 950) && (sf::Mouse::getPosition(window).x <= 1750) &&
-          (sf::Mouse::getPosition(window).y >= 225) && (sf::Mouse::getPosition(window).y <= 375)) {
+             (sf::Mouse::getPosition(window).y >= 225) && (sf::Mouse::getPosition(window).y <= 375)) {
           SetButton (window, sf::Vector2f(1350.f, 300.f), "Mandelbrot's set", sf::Color::Blue);
           window.display();
-          sf::Event event_Mandelbrot;
-          while (window.pollEvent(event_Mandelbrot)) {
-            if (event_Mandelbrot.type == sf::Event::MouseButtonPressed) {
-              if (event_Mandelbrot.mouseButton.button == sf::Mouse::Left) {
-                Mandelbrot();
+          while (window.pollEvent(event)) {
+            if (event.type == sf::Event::MouseButtonPressed) {
+              if (event.mouseButton.button == sf::Mouse::Left) {
+                Mandelbrot();   // this function cannot return any errors
                 notification(window);
               }
             }
@@ -146,47 +158,53 @@ int main() {
       }
       SetButton (window, sf::Vector2f(1350.f, 300.f), "Mandelbrot's set", sf::Color::Black);
       window.display();
+      // handling events, associated with the sixth button (hovering over it, pressing, moving the cursor away)
       while ((sf::Mouse::getPosition(window).x >= 950) && (sf::Mouse::getPosition(window).x <= 1750) &&
-          (sf::Mouse::getPosition(window).y >= 425) && (sf::Mouse::getPosition(window).y <= 575)) {
+             (sf::Mouse::getPosition(window).y >= 425) && (sf::Mouse::getPosition(window).y <= 575)) {
           SetButton (window, sf::Vector2f(1350.f, 500.f), "A spigot algorithm", sf::Color::Blue);
           window.display();
-          sf::Event event_spigot;
-          while (window.pollEvent(event_spigot)) {
-            if (event_spigot.type == sf::Event::MouseButtonPressed) {
-              if (event_spigot.mouseButton.button == sf::Mouse::Left) {
+          while (window.pollEvent(event)) {
+            if (event.type == sf::Event::MouseButtonPressed) {
+              if (event.mouseButton.button == sf::Mouse::Left) {
                 notification(window);
-                spigot();
+                if (spigot() == -1) {  // error handling
+                  window.close();
+                  return -1;
+                }
               }
             }
           }
       }
       SetButton (window, sf::Vector2f(1350.f, 500.f), "A spigot algorithm", sf::Color::Black);
       window.display();
+      // handling events, associated with the seventh button (hovering over it, pressing, moving the cursor away)
       while ((sf::Mouse::getPosition(window).x >= 950) && (sf::Mouse::getPosition(window).x <= 1750) &&
-          (sf::Mouse::getPosition(window).y >= 625) && (sf::Mouse::getPosition(window).y <= 775)) {
+             (sf::Mouse::getPosition(window).y >= 625) && (sf::Mouse::getPosition(window).y <= 775)) {
           SetButton (window, sf::Vector2f(1350.f, 700.f), "Monte-Carlo method", sf::Color::Blue);
           window.display();
-          sf::Event event_scattering;
-          while (window.pollEvent(event_scattering)) {
-            if (event_scattering.type == sf::Event::MouseButtonPressed) {
-              if (event_scattering.mouseButton.button == sf::Mouse::Left) {
-                Monte_Carlo();
+          while (window.pollEvent(event)) {
+            if (event.type == sf::Event::MouseButtonPressed) {
+              if (event.mouseButton.button == sf::Mouse::Left) {
+                Monte_Carlo();  // this function cannot return any errors
               }
             }
           }
       }
       SetButton (window, sf::Vector2f(1350.f, 700.f), "Monte-Carlo method", sf::Color::Black);
       window.display();
+      // handling events, associated with the eighth button (hovering over it, pressing, moving the cursor away)
       while ((sf::Mouse::getPosition(window).x >= 950) && (sf::Mouse::getPosition(window).x <= 1750) &&
-          (sf::Mouse::getPosition(window).y >= 825) && (sf::Mouse::getPosition(window).y <= 975)) {
+             (sf::Mouse::getPosition(window).y >= 825) && (sf::Mouse::getPosition(window).y <= 975)) {
           SetButton (window, sf::Vector2f(1350.f, 900.f), "Viete's formula", sf::Color::Blue);
           window.display();
-          sf::Event event_Viete;
-          while (window.pollEvent(event_Viete)) {
-            if (event_Viete.type == sf::Event::MouseButtonPressed) {
-              if (event_Viete.mouseButton.button == sf::Mouse::Left) {
+          while (window.pollEvent(event)) {
+            if (event.type == sf::Event::MouseButtonPressed) {
+              if (event.mouseButton.button == sf::Mouse::Left) {
                 notification(window);
-                Viete();
+                if (Viete() == -1) {  // error handling
+                  window.close();
+                  return -1;
+                }
               }
             }
           }

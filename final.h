@@ -9,7 +9,7 @@ extern int count;  // the number of intersections of needles and lines
 extern sf::VertexArray needles;  // an array of vertices, forming needles
 extern pthread_mutex_t mutex;  // the presence of a critical section requires the synchronization of threads
 
-// the arguments of a function, called on a thread, are "wrapped" in a structure
+// the arguments of a function, called on a thread, are "wrapped" in a structure (especially for Buffon's needle problem)
 typedef struct ArgumentsForSpreader {
   int st_from;  // starting needle number
   int st_to;  // ending needle number
@@ -42,18 +42,18 @@ class Point {  // especially for two-dimensional Monte Carlo method
     }
 };
 
-class complex_number {
+class complex_number {  // it is used in a recurrent formula (especially for Mandelbrot's set)
   public:
     long double real, imaginary;
 };
 
 void SetButton (sf::RenderWindow& window, sf::Vector2f button_position, std::string button_content, sf::Color text_color);
-void Monte_Carlo();
+int Monte_Carlo();
 sf::Vector2f elastic_collision (sf::Vector2f initial_velocities, sf::Vector2i masses);
 int blocks();
 void Mandelbrot_set (sf::VertexArray& vertex_array, int precision, long double zoom, sf::RenderWindow& window);
 void Mandelbrot_iterations(long double eps);
-void Mandelbrot();
+int Mandelbrot();
 void* spreader(void* args);
 int Buffon_needle();
 int Viete();

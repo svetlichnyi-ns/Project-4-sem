@@ -13,6 +13,7 @@ int count;  // the number of intersections of needles and lines
 sf::VertexArray needles;  // an array of vertices, forming needles
 pthread_mutex_t mutex;  // the presence of a critical section requires the synchronization of threads
 
+// this function draws a button with an inscription on it
 void SetButton (sf::RenderWindow& window, sf::Vector2f button_position, std::string button_content, sf::Color text_color) {
   sf::RectangleShape button;
   button.setSize(sf::Vector2f(800.f, 150.f));
@@ -28,6 +29,7 @@ void SetButton (sf::RenderWindow& window, sf::Vector2f button_position, std::str
   text.setCharacterSize (80);
   text.setFillColor (text_color);
   text.setString ((sf::String) button_content);
+  // so as to centralize the text on the button
   sf::FloatRect textRect = text.getLocalBounds();
   text.setOrigin(textRect.left + textRect.width / 2.f, textRect.top + textRect.height / 2.f);
   text.setPosition (button_position);
@@ -37,7 +39,8 @@ void SetButton (sf::RenderWindow& window, sf::Vector2f button_position, std::str
   return;
 }
 
-void Monte_Carlo() {
+// this function completely implements Monte Carlo algorithm (file "scattering.cpp")
+int Monte_Carlo() {
   sf::RenderWindow window(sf::VideoMode(1920, 1080), "Scattering of points");
   window.setFramerateLimit(30);  // this frame rate provides both optimal perception and rather high computational performance
 
@@ -84,7 +87,7 @@ void Monte_Carlo() {
     sf::CircleShape point(2.f, 100000);  // we actually draw not points, but tiny circles, so that they are seen for us
     point.setOrigin(point.getRadius(), point.getRadius());
     point.setPosition(sf::Vector2f((float) (window.getSize().x / 2) - square.getSize().x / 2 + square.getSize().x * static_cast<float>(rand()) / static_cast<float>(RAND_MAX),
-                              (float) (window.getSize().y / 2) - square.getSize().y / 2 + square.getSize().y * static_cast<float>(rand()) / static_cast<float>(RAND_MAX)));
+                                   (float) (window.getSize().y / 2) - square.getSize().y / 2 + square.getSize().y * static_cast<float>(rand()) / static_cast<float>(RAND_MAX)));
     if (pow(square.getPosition().x - point.getPosition().x, 2.f) + pow(square.getPosition().y - point.getPosition().y, 2.f) <= pow(circle.getRadius() + circle.getOutlineThickness(), 2.f)) {
       point.setFillColor(sf::Color::Blue);  // if the point occurs inside the circle or on its border, it becomes blue
       blue_points++;
@@ -103,7 +106,7 @@ void Monte_Carlo() {
     window.display();
     window.draw(patch);
   }
-  return;
+  return 0;
 }
 
 // this function calculates blocks' velocities after their absolutely elastic collision
@@ -115,6 +118,7 @@ sf::Vector2f elastic_collision (sf::Vector2f initial_velocities, sf::Vector2i ma
   return final_velocities;
 }
 
+// this function completely implements scenario with colliding blocks (file "blocks.cpp")
 int blocks() {
   std::cout << "Before entering masses, consider that the second block's mass should exceed the first block's mass by 1, 100, 10000 or 1000000 times.\n";
   
@@ -274,10 +278,11 @@ int blocks() {
   }
   std::cout << "Collisions: " << collisions << std::endl;
   std::cout << "Number PI in its " << (int) log10(mass_2 / mass_1) / 2 + 1 << "th approximation is equal to: ";
-  std::cout << std::setprecision((int) log10(mass_2 / mass_1) / 2 + 1) << (float) collisions / sqrtf((float) (mass_2 / mass_1)) << std::endl;
+  std::cout << std::setprecision((int) log10(mass_2 / mass_1) / 2 + 1) << (float) collisions / sqrtf((float) (mass_2 / mass_1)) << std::endl << std::endl;
   return 0;
 }
 
+// this function draws Mandelbrot's set (a part of the file "Mandelbrot_set.cpp")
 void Mandelbrot_set (sf::VertexArray& vertex_array, int precision, long double zoom, sf::RenderWindow& window) {
   for (int i = 0; i < (int) window.getSize().y; i++) {
     for (int j = 0; j < (int) window.getSize().x; j++) {
@@ -313,6 +318,7 @@ void Mandelbrot_set (sf::VertexArray& vertex_array, int precision, long double z
   return;
 }
 
+// this function uses a recursive formula that is necessary for PI's calculation (a part of the file "Mandelbrot_set.cpp")
 void Mandelbrot_iterations(long double eps) {
   long double constanta = 0.25l + eps;
   long double z = constanta;
@@ -333,7 +339,8 @@ void Mandelbrot_iterations(long double eps) {
   return;
 }
 
-void Mandelbrot() {
+// this function is a main one in a file "Mandelbrot_set.cpp"
+int Mandelbrot() {
   sf::RenderWindow window (sf::VideoMode(1920, 1080), "Mandelbrot's set");
   sf::VertexArray pointmap (sf::Points, window.getSize().x * window.getSize().y);
   
@@ -357,9 +364,10 @@ void Mandelbrot() {
     long double eps = powl(100.l, -j);
     Mandelbrot_iterations(eps);
   }
-  return;
+  return 0;
 }
 
+// this function is called on each thread in a file "needles_multithreading.cpp"
 void* spreader(void* args) {  // a function, called on a thread
   Args* arg = reinterpret_cast<Args*> (args);
   for (int j = arg->st_from; j < arg->st_to; j++) {
@@ -404,6 +412,7 @@ void* spreader(void* args) {  // a function, called on a thread
   return NULL;
 }
 
+// this function is a main one in a file "needles_multithreading.cpp"
 int Buffon_needle() {
   float width;
   std::cout << "Enter the interval between neighbouring lines: ";
@@ -524,7 +533,7 @@ int Buffon_needle() {
   long double pi = 2.f * length / width / (float) count * (float) NumOfNeedles;
   std::cout << "Number PI is: " << std::setprecision(15) << pi << ";\n";
   std::cout << "The calculation error is: " << fabsl(pi - PI_25_DIGITS) << ";\n";
-  std::cout << "It took " << (std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count()) / 1'000'000'000.l << " seconds to calculate it.\n";
+  std::cout << "It took " << (std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count()) / 1'000'000'000.l << " seconds to calculate it.\n\n";
 
   // the destroyment of the mutex
   if (pthread_mutex_destroy(&mutex) != 0) {
@@ -551,6 +560,7 @@ int Buffon_needle() {
   return 0;
 }
 
+// this function autonomously implements Viete's formula (file "Viete.cpp")
 int Viete() {
   uint64_t N;  // the number of factors that make up the product
   std::cout << "Enter the number of factors in Viete's formula: ";
@@ -570,23 +580,27 @@ int Viete() {
   std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();  // stop the timer
   std::cout << "Number PI, obtained as a product of " << N << " factors, is equal to: " << std::setprecision(15) << pi << ";\n";
   std::cout << "The calculation error is: " << fabsl(pi - PI_25_DIGITS) << ";\n";
-  std::cout << "The calculation took " << (std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count()) / 1'000'000'000.l << " seconds.\n";
+  std::cout << "The calculation took " << (std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count()) / 1'000'000'000.l << " seconds.\n\n";
   free(factors);  // free allocated memory
   return 0;
 }
 
+// a function, used in the first integral expression (file "integral.cpp")
 long double function_1 (long double x) {
   return 4.l / (1.l + powl(x, 2.l));
 }
 
+// a function, used in the second integral expression (file "integral.cpp")
 long double function_2 (long double x) {
   return 6.l / sqrtl(1.l - powl(x, 2.l));
 }
 
+// a function, used in the third integral expression (file "integral.cpp")
 long double function_3 (long double x) {
   return 2.l * sqrtl(1.l - powl(x, 2.l));
 }
 
+// this function is responsible for computational work only (the part of the file "integral.cpp")
 long double Integral (uint8_t method, long double a, long double b, unsigned long N, long double (*func) (long double)) {
   const long double length = (b - a) / N;  // the length of each segment of integration
   long double integral = 0.l;  // an initial value of the integral
@@ -687,6 +701,7 @@ long double Integral (uint8_t method, long double a, long double b, unsigned lon
   return integral;
 }
 
+// this function informs a user about the results of integral's calculation (the part of the file "integral.cpp")
 int usage_of_method (uint8_t method, long double a, long double b, unsigned long N, long double (*func) (long double)) {
   switch (method) {
     case 0:
@@ -730,6 +745,7 @@ int usage_of_method (uint8_t method, long double a, long double b, unsigned long
   return 0;
 }
 
+// this function runs calculation of integrals (a main function in the file "integral.cpp")
 int integral_computation() {
   std::cout << "Enter the number of parts, into which you want to split the segment of integration: ";
   unsigned long NumOfSegments;
@@ -757,6 +773,7 @@ int integral_computation() {
   return 0;
 }
 
+// this function autonomously implements a spigot algorithm (a main function in the file "spigot.cpp")
 int spigot() {
   std::cout << "Enter the number of digits in number PI that you want to calculate (two or more): ";
   int N;
@@ -822,7 +839,7 @@ int spigot() {
   std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();  // stop the timer
   std::setprecision(10);
   std::cout << "; it took " << (std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count()) / 1000000.l;
-  std::cout << " seconds to calculate PI.\n";
+  std::cout << " seconds to calculate PI.\n\n";
   // memory release
   free(digits_of_pi);
   for (int i = 0; i < size; i++)
@@ -831,6 +848,7 @@ int spigot() {
   return 0;
 }
 
+// this function forms a computing framework of the file "series.cpp"
 int calculation_of_pi_via_series (int way, int N) {
   if (!((way == 0) || (way == 1) || (way == 2) || (way == 3) || (way == 4))) {
     std::cerr << "Undefined method\n";
@@ -895,6 +913,7 @@ int calculation_of_pi_via_series (int way, int N) {
   return 0;
 }
 
+// this function runs all experiments on PI's calculation via series (a main function in the file "series.cpp")
 int series() {
   std::vector<int> ways = {};  // vector of ways of calculation of pi
   for (int i = 0; i < 5; i++)
@@ -909,6 +928,7 @@ int series() {
   return 0;
 }
 
+// an auxiliary function, displaying a notification on the screen
 void notification(sf::RenderWindow& window) {
   sf::RenderWindow window_notification(sf::VideoMode(1920, 1080), "Notification");
   window_notification.clear(sf::Color::White);
@@ -918,7 +938,7 @@ void notification(sf::RenderWindow& window) {
 
   sf::Text text;
   text.setFont (font);
-  text.setCharacterSize (100);
+  text.setCharacterSize (120);
   text.setFillColor (sf::Color::Red);
   text.setString ("Look at the console, please");
   sf::FloatRect textRect = text.getLocalBounds();
