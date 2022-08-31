@@ -67,5 +67,6 @@ int spigot();
 int calculation_of_pi_via_series (int way, int N);
 int series();
 void notification(sf::RenderWindow& window);
+void reference_information(const std::string &filename, sf::Vector2f size);
 
 #endif

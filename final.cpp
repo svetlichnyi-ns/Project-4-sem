@@ -56,7 +56,7 @@ int main() {
     SetButton (window, sf::Vector2f(500.f, 300.f), "Buffon's needle problem", sf::Color::Black);
     SetButton (window, sf::Vector2f(500.f, 500.f), "Colliding blocks", sf::Color::Black);
     SetButton (window, sf::Vector2f(500.f, 700.f), "Numerical integration", sf::Color::Black);
-    SetButton (window, sf::Vector2f(500.f, 900.f), "Series summation", sf::Color::Black);
+    SetButton (window, sf::Vector2f(500.f, 900.f), "Series' summation", sf::Color::Black);
     SetButton (window, sf::Vector2f(1350.f, 300.f), "Mandelbrot's set", sf::Color::Black);
     SetButton (window, sf::Vector2f(1350.f, 500.f), "A spigot algorithm", sf::Color::Black);
     SetButton (window, sf::Vector2f(1350.f, 700.f), "Monte-Carlo method", sf::Color::Black);
@@ -74,6 +74,7 @@ int main() {
           while (window.pollEvent(event)) {
             if (event.type == sf::Event::MouseButtonPressed) {
               if (event.mouseButton.button == sf::Mouse::Left) {
+                reference_information("pictures/Buffon.png", sf::Vector2f(846.f, 467.f));
                 notification(window);
                 if (Buffon_needle() == -1) {  // error handling
                   window.close();
@@ -93,6 +94,7 @@ int main() {
           while (window.pollEvent(event)) {
             if (event.type == sf::Event::MouseButtonPressed) {
               if (event.mouseButton.button == sf::Mouse::Left) {
+                reference_information("pictures/blocks.png", sf::Vector2f(849.f, 321.f));
                 notification(window);
                 if (blocks() == -1) {  // error handling
                   window.close();
@@ -112,6 +114,7 @@ int main() {
           while (window.pollEvent(event)) {
             if (event.type == sf::Event::MouseButtonPressed) {
               if (event.mouseButton.button == sf::Mouse::Left) {
+                reference_information("pictures/integral.png", sf::Vector2f(834.f, 1011.f));
                 notification(window);
                 if (integral_computation() == -1) {  // error handling
                   window.close();
@@ -126,11 +129,12 @@ int main() {
       // handling events, associated with the forth button (hovering over it, pressing, moving the cursor away)
       while ((sf::Mouse::getPosition(window).x >= 100) && (sf::Mouse::getPosition(window).x <= 900) &&
              (sf::Mouse::getPosition(window).y >= 825) && (sf::Mouse::getPosition(window).y <= 975)) {
-          SetButton (window, sf::Vector2f(500.f, 900.f), "Series summation", sf::Color::Blue);
+          SetButton (window, sf::Vector2f(500.f, 900.f), "Series' summation", sf::Color::Blue);
           window.display();
           while (window.pollEvent(event)) {
             if (event.type == sf::Event::MouseButtonPressed) {
               if (event.mouseButton.button == sf::Mouse::Left) {
+                reference_information("pictures/series.png", sf::Vector2f(832.f, 792.f));
                 notification(window);
                 if (series() == -1) {  // error handling
                   window.close();
@@ -140,7 +144,7 @@ int main() {
             }
           }
       }
-      SetButton (window, sf::Vector2f(500.f, 900.f), "Series summation", sf::Color::Black);
+      SetButton (window, sf::Vector2f(500.f, 900.f), "Series' summation", sf::Color::Black);
       window.display();
       // handling events, associated with the fifth button (hovering over it, pressing, moving the cursor away)
       while ((sf::Mouse::getPosition(window).x >= 950) && (sf::Mouse::getPosition(window).x <= 1750) &&
@@ -150,6 +154,7 @@ int main() {
           while (window.pollEvent(event)) {
             if (event.type == sf::Event::MouseButtonPressed) {
               if (event.mouseButton.button == sf::Mouse::Left) {
+                reference_information("pictures/Mandelbrot.png", sf::Vector2f(846.f, 526.f));
                 Mandelbrot();   // this function cannot return any errors
                 notification(window);
               }
@@ -166,6 +171,7 @@ int main() {
           while (window.pollEvent(event)) {
             if (event.type == sf::Event::MouseButtonPressed) {
               if (event.mouseButton.button == sf::Mouse::Left) {
+                reference_information("pictures/spigot.png", sf::Vector2f(819.f, 280.f));
                 notification(window);
                 if (spigot() == -1) {  // error handling
                   window.close();
@@ -185,6 +191,7 @@ int main() {
           while (window.pollEvent(event)) {
             if (event.type == sf::Event::MouseButtonPressed) {
               if (event.mouseButton.button == sf::Mouse::Left) {
+                reference_information("pictures/Monte_Carlo.png", sf::Vector2f(860.f, 445.f));
                 Monte_Carlo();  // this function cannot return any errors
               }
             }
@@ -200,6 +207,7 @@ int main() {
           while (window.pollEvent(event)) {
             if (event.type == sf::Event::MouseButtonPressed) {
               if (event.mouseButton.button == sf::Mouse::Left) {
+                reference_information("pictures/Viete.png", sf::Vector2f(761.f, 154.f));
                 notification(window);
                 if (Viete() == -1) {  // error handling
                   window.close();

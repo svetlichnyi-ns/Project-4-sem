@@ -587,17 +587,17 @@ int Viete() {
 
 // a function, used in the first integral expression (file "integral.cpp")
 long double function_1 (long double x) {
-  return 4.l / (1.l + powl(x, 2.l));
+  return 2.l * sqrtl(1.l - powl(x, 2.l));
 }
 
 // a function, used in the second integral expression (file "integral.cpp")
 long double function_2 (long double x) {
-  return 6.l / sqrtl(1.l - powl(x, 2.l));
+  return 4.l / (1.l + powl(x, 2.l));
 }
 
 // a function, used in the third integral expression (file "integral.cpp")
 long double function_3 (long double x) {
-  return 2.l * sqrtl(1.l - powl(x, 2.l));
+  return 6.l / sqrtl(1.l - powl(x, 2.l));
 }
 
 // this function is responsible for computational work only (the part of the file "integral.cpp")
@@ -757,17 +757,17 @@ int integral_computation() {
     methods.push_back(i);
   std::cout << "The first integral expression" << std::endl;
   for (uint8_t i = 0; i < methods.size(); i++) {
-    if (usage_of_method(methods.at(i), 0.l, 1.l, NumOfSegments, function_1) == -1)
+    if (usage_of_method(methods.at(i), -1.l, 1.l, NumOfSegments, function_1) == -1)
       return -1;
   }
   std::cout << "The second integral expression" << std::endl;
   for (uint8_t i = 0; i < methods.size(); i++) {
-    if (usage_of_method(methods.at(i), 0.l, 0.5l, NumOfSegments, function_2) == -1)
+    if (usage_of_method(methods.at(i), 0.l, 1.l, NumOfSegments, function_2) == -1)
       return -1;
   }
   std::cout << "The third integral expression" << std::endl;
   for (uint8_t i = 0; i < methods.size(); i++) {
-    if (usage_of_method(methods.at(i), -1.l, 1.l, NumOfSegments, function_3) == -1)
+    if (usage_of_method(methods.at(i), 0.l, 0.5l, NumOfSegments, function_3) == -1)
       return -1;
   }
   return 0;
@@ -928,7 +928,7 @@ int series() {
   return 0;
 }
 
-// an auxiliary function, displaying a notification on the screen
+// an auxiliary function that displays a notification (about the necessity to look at the console) on the screen
 void notification(sf::RenderWindow& window) {
   sf::RenderWindow window_notification(sf::VideoMode(1920, 1080), "Notification");
   window_notification.clear(sf::Color::White);
@@ -951,6 +951,29 @@ void notification(sf::RenderWindow& window) {
     while (window_notification.pollEvent(event)) {
       if (event.type == sf::Event::Closed)
         window_notification.close();
+    }
+  }
+  return;
+}
+
+// an auxiliary function that displays reference information on the screen
+void reference_information(const std::string &filename, sf::Vector2f size) {
+  sf::RenderWindow window_info(sf::VideoMode((unsigned int) size.x, (unsigned int) size.y), "Reference information");
+  
+  sf::RectangleShape info;
+  info.setSize(size);
+  sf::Texture info_texture;
+  info_texture.loadFromFile(filename);
+  info.setTexture(&info_texture);
+  
+  window_info.draw(info);
+  window_info.display();
+  // so as to continue using a program, a user should close a window with reference information first
+  while (window_info.isOpen()) {
+    sf::Event event;
+    while (window_info.pollEvent(event)) {
+      if (event.type == sf::Event::Closed)
+        window_info.close();
     }
   }
   return;
