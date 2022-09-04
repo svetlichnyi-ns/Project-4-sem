@@ -1,0 +1,65 @@
+\documentclass[12pt]{article}
+\usepackage{blindtext}
+\begin{document}
+\begin{titlepage}
+\begin{center}
+	\large\textbf{Numerical integration}
+\end{center}
+\scriptsize
+This method of computation of $\pi$ is based on the usage of three integral expressions:
+\begin{flushleft}
+	$1)\int\limits_{-1}^{1} 2\cdot\sqrt{1-x^{2}} dx=\pi;\;\;$
+    $2)\int\limits_{0}^{1} \frac{4}{1+x^{2}} dx = \pi;\;\;$
+	$3)\int\limits_{0}^{\frac{1}{2}} \frac{6}{\sqrt{1-x^{2}}} dx = \pi.$
+
+Each of these three integrals may be calculated via the following methods:
+
+\textbf{1) left rectangle method}:
+
+Let the segment of integration $[a; b]$ be divided into $N$ equal parts. Then the integral can be numerically calculated as follows:
+
+$\int\limits_{a}^{b} f(x)dx=\frac{b-a}{N}\cdot\displaystyle\sum_{i=0}^{N-1} f\left(a+i\cdot\frac{b-a}{N}\right)$.
+
+\textbf{2) right rectangle method}:
+
+Under the same assumptions as in the first method:
+
+$\int\limits_{a}^{b} f(x)dx=\frac{b-a}{N}\cdot\displaystyle\sum_{i=0}^{N-1} f\left(a+\left(i+1\right)\cdot\frac{b-a}{N}\right)$.
+
+\textbf{3) middle rectangle method}:
+
+Under the same assumptions as in the first method:
+
+$\int\limits_{a}^{b} f(x)dx=\frac{b-a}{N}\cdot\displaystyle\sum_{i=0}^{N-1} f\left(a+\left(i+\frac{1}{2}\right)\cdot\frac{b-a}{N}\right)$.
+
+\textbf{4) trapezoidal method}:
+
+Under the same assumptions as in the first method:
+
+$\int\limits_{a}^{b} f(x)dx=\frac{1}{2}\cdot\frac{b-a}{N}\cdot\displaystyle\sum_{i=0}^{N-1}\left[ f\left(a+i\cdot\frac{b-a}{N}\right)+f\left(a+\left(i+1\right)\cdot\frac{b-a}{N}\right)\right]$.
+
+\textbf{5) parabola method (Simpson's method)}:
+
+Under the same assumptions as in the first method:
+
+$\int\limits_{a}^{b} f(x)dx=\frac{1}{6}\cdot\frac{b-a}{N}\cdot\displaystyle\sum_{i=0}^{N-1}\left[ f\left(a+i\cdot\frac{b-a}{N}\right)+4\cdot f\left(a+\left(i+\frac{1}{2}\right)\cdot\frac{b-a}{N}\right)+f\left(a+\left(i+1\right)\cdot\frac{b-a}{N}\right)\right]$.
+
+\textbf{6) Romberg's method}:
+
+It uses values, calculated earlier by the trapezoidal method, to obtain a more accurate estimate of the integral.
+
+\textbf{7) one-dimensional Monte Carlo method}:
+
+The segment of integration $[a; b]$ is divided into $N$ equal parts, and the function's value is chosen randomly on each small segment. Consequently,
+
+$\int\limits_{a}^{b} f(x)dx=\frac{b-a}{N}\cdot\displaystyle\sum_{i=0}^{N-1} f\left( rand\left[a+i\cdot\frac{b-a}{N};\;a+\left(i+1\right)\cdot\frac{b-a}{N}\right]\right)$,
+
+where the expression in the function's argument means an arbitrary value within a corresponding segment.
+
+\textbf{8) two-dimensional Monte Carlo method}.
+
+Around the graph of a given non-negative function a rectangle is taken into consideration. We start randomly scattering points inside this rectangle. Based on the number of points that fell under the curvilinear trapezoid we statistically compute the integral.
+
+\end{flushleft}
+\end{titlepage}
+\end{document}
