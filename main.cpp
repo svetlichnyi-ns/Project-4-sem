@@ -1,3 +1,5 @@
+#define _USE_MATH_DEFINES
+
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
@@ -6,7 +8,6 @@
 #include <iomanip>
 #include <sstream>
 #include <pthread.h>
-#include <assert.h>
 #include <cstdlib>
 #include <cstdint>
 #include <chrono>
@@ -14,11 +15,16 @@
 #include <functional>
 #include <vector>
 #include <stdio.h>
-#include <omp.h>
 #include <cmath>
-#include "final.h"
-
-#define PI_25_DIGITS 3.141592653589793238462643
+#include "decoration.h"
+#include "blocks.h"
+#include "Buffon.h"
+#include "integral.h"
+#include "Mandelbrot.h"
+#include "scattering.h"
+#include "series.h"
+#include "spigot.h"
+#include "Viete.h"
 
 int main() {
   sf::RenderWindow window(sf::VideoMode(1920, 1080), "Menu");
@@ -38,10 +44,10 @@ int main() {
   header.setPosition(sf::Vector2f((float) window.getSize().x / 2.f, 100.f));
 
   sf::Font font;
-  font.loadFromFile ("fonts/Times_New_Roman.ttf");
+  font.loadFromFile ("fonts/Bitter_Bold_700.ttf");
   sf::Text text;
   text.setFont (font);
-  text.setCharacterSize (85);
+  text.setCharacterSize (65);
   text.setFillColor (sf::Color::Red);
   text.setString ("Choose any method of calculation of number PI");
   // so as to align text's and figure's centers

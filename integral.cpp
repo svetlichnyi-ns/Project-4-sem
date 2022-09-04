@@ -1,36 +1,12 @@
+#define _USE_MATH_DEFINES
 #include <iostream>
 #include <iomanip>
 #include <functional>
-#include <assert.h>
 #include <vector>
 #include <cstdlib>
 #include <chrono>
 #include <cmath>
-
-#define PI_25_DIGITS 3.141592653589793238462643
-
-class Point {  // especially for two-dimensional Monte Carlo method
-  private:
-    long double x, y;
-  public:
-    Point(long double x_value, long double y_value) {  // constructor
-      x = x_value;
-      y = y_value;
-    }
-    ~Point() {}  // destructor
-    long double get_X() {
-      return x;
-    }
-    void set_X(long double x_value) {
-      x = x_value;
-    }
-    long double get_Y() {
-      return y;
-    }
-    void set_Y(long double y_value) {
-      y = y_value;
-    }
-};
+#include "integral.h"
 
 long double function_1 (long double x) {
   return 4.l / (1.l + powl(x, 2.l));
@@ -123,7 +99,7 @@ long double Integral (uint8_t method, long double a, long double b, unsigned lon
       Point* Points = (Point*) malloc (N * sizeof(Point));  // a dynamic array of instances of class Point
       if (Points == NULL) {
         std::cout << "Failed to allocate memory via malloc()\n";
-        return -1;
+        return -1.l;
       }
       for (unsigned long int i = 0; i < N; i++) {
         // a random abscissa, belonging to the segment [a; b]
@@ -139,7 +115,7 @@ long double Integral (uint8_t method, long double a, long double b, unsigned lon
     }
     default:
       std::cerr << "Undefined method\n";
-      return -1;
+      return -1.l;
   }
   return integral;
 }
@@ -176,22 +152,25 @@ int usage_of_method (uint8_t method, long double a, long double b, unsigned long
   }
   std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();  // start the timer
   // in the context of methods 0-4 and 6: N is the number of segments of integration; in the 7th method, it's the number of scattered points
-  if (Integral(method, a, b, N, func) == -1)
+  if (Integral(method, a, b, N, func) < 0.l)
     return -1;
   long double pi = Integral(method, a, b, N, func);
   std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();  // stop the timer
   std::cout << "Number PI is: " << std::setprecision(15) << pi;
-  std::cout << ";\nThe calculation error is: " << fabsl(pi - PI_25_DIGITS);
+  std::cout << ";\nThe calculation error is: " << fabsl(pi - M_PIl);
   std::cout << ";\nIt took " << (std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count()) / 1000000.l;
   std::cout << " seconds to calculate PI.\n\n";
   return 0;
 }
 
-int main() {
+int integral_computation() {
   std::cout << "Enter the number of parts, into which you want to split the segment of integration: ";
   unsigned long NumOfSegments;
   std::cin >> NumOfSegments;
-  assert(NumOfSegments >= 1 && "The number of segments of integration must be positive");
+  if (NumOfSegments < 1) {
+    std::cerr << "The number of segments of integration must be positive\n";
+    return -1;
+  }
 
   std::vector<uint8_t> methods = {};  // all currently available methods
   for (uint8_t i = 0; i < 8; i++)

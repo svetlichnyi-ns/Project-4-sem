@@ -1,29 +1,18 @@
+#define _USE_MATH_DEFINES
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
-#include <assert.h>
 #include <pthread.h>
 #include <iostream>
 #include <iomanip>
 #include <cstdlib>
 #include <chrono>
 #include <cmath>
+#include "Buffon.h"
 
-#define PI_25_DIGITS 3.141592653589793238462643
-
-int count = 0;  // the number of intersections of needles and lines
+int count;  // the number of intersections of needles and lines
 sf::VertexArray needles(sf::Lines, 0);  // an array of vertices, forming needles
 pthread_mutex_t mutex;  // the presence of a critical section requires the synchronization of threads
-
-// the arguments of a function, called on a thread, are "wrapped" in a structure
-typedef struct ArgumentsForSpreader {
-  int st_from;  // starting needle number
-  int st_to;  // ending needle number
-  float st_width;  // the interval between neighbouring lines
-  float st_length;  // the length of each needle
-  int st_NumOfLines;  // the total number of lines
-  bool st_error;  // an indicator of an error inside a function, called on a thread
-} Args;
 
 void* spreader(void* args) {  // a function, called on a thread
   Args* arg = reinterpret_cast<Args*> (args);
@@ -69,29 +58,42 @@ void* spreader(void* args) {  // a function, called on a thread
   return NULL;
 }
 
-int main() {
+int Buffon_needle() {
   float width;
   std::cout << "Enter the interval between neighbouring lines: ";
   std::cin >> width;
-  assert(width > 0 && "The interval between neighbouring lines must be positive");
+  if (width <= 0) {
+    std::cerr << "The interval between neighbouring lines must be positive\n";
+    return -1;
+  }
 
   int NumOfNeedles;
   std::cout << "Enter the number of needles you want to scatter: ";
   std::cin >> NumOfNeedles;
-  assert(NumOfNeedles > 0 && "The number of needles must be positive");
+  if (NumOfNeedles <= 0) {
+    std::cerr << "The number of needles must be positive\n";
+    return -1;
+  }
 
   float length;
   std::cout << "Enter the length of each needle: ";
   std::cin >> length;
-  assert(length > 0 && "The length of each needle must be positive");
+  if (length <= 0) {
+    std::cerr << "The length of each needle must be positive\n";
+    return -1;
+  }
 
   int NumOfThreads;
   std::cout << "Enter the preferable number of threads: ";
   std::cin >> NumOfThreads;
-  assert(NumOfThreads > 0 && "The number of threads must be positive");
+  if (NumOfThreads <= 0) {
+    std::cerr << "The number of threads must be positive\n";
+    return -1;
+  }
 
   std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();  // start the timer
-  
+  count = 0;  // clear the variable every time when a new experiment starts
+
   // calculate the number of lines, based on the distance between adjacent ones
   int NumOfLines = static_cast<int>(1080.f / width) + 1;
 
@@ -186,8 +188,8 @@ int main() {
   // calculate number pi, based on the probability for each needle to cross any line and on current geometrical parameters
   long double pi = 2.f * length / width / (float) count * (float) NumOfNeedles;
   std::cout << "Number PI is: " << std::setprecision(15) << pi << ";\n";
-  std::cout << "The calculation error is: " << fabsl(pi - PI_25_DIGITS) << ";\n";
-  std::cout << "It took " << (std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count()) / 1'000'000'000.l << " seconds to calculate it.\n";
+  std::cout << "The calculation error is: " << fabsl(pi - M_PIl) << ";\n";
+  std::cout << "It took " << (std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count()) / 1'000'000'000.l << " seconds to calculate it.\n\n";
 
   // the destroyment of the mutex
   if (pthread_mutex_destroy(&mutex) != 0) {

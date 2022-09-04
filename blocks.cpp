@@ -4,8 +4,8 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
-#include <assert.h>
 #include <cmath>
+#include "blocks.h"
 
 // this function calculates blocks' velocities after their absolutely elastic collision
 sf::Vector2f elastic_collision (sf::Vector2f initial_velocities, sf::Vector2i masses) {
@@ -16,18 +16,24 @@ sf::Vector2f elastic_collision (sf::Vector2f initial_velocities, sf::Vector2i ma
   return final_velocities;
 }
 
-int main() {
+int blocks() {
   std::cout << "Before entering masses, consider that the second block's mass should exceed the first block's mass by 1, 100, 10000 or 1000000 times.\n";
-  
+
   int mass_1;
   std::cout << "Enter the mass of the first block: ";
   std::cin >> mass_1;
-  assert(mass_1 > 0 && "The mass must be strictly positive");
-  
+  if (mass_1 <= 0) {
+    std::cerr << "The mass must be strictly positive\n";
+    return -1;
+  }
+
   int mass_2;
   std::cout << "Enter the mass of the second block: ";
   std::cin >> mass_2;
-  assert(mass_2 > 0 && "The mass must be strictly positive");
+  if (mass_2 <= 0) {
+    std::cerr << "The mass must be strictly positive\n";
+    return -1;
+  }
 
   float speed_1 = 0.f, speed_2;  // at the beginning, the left block is motionless, whereas the right block moves towards the left one
 
@@ -98,13 +104,13 @@ int main() {
   }
 
   sf::Font font;
-  font.loadFromFile ("fonts/Times_New_Roman.ttf");
+  font.loadFromFile ("fonts/a_Futurica_ExtraBold.ttf");
 
   sf::Text text;
   text.setFont (font);
-  text.setCharacterSize (100);
+  text.setCharacterSize (80);
   text.setFillColor (sf::Color::Black);
-  text.setPosition (sf::Vector2f(700.f, 50.f));
+  text.setPosition (sf::Vector2f(700.f, 30.f));
 
   std::ostringstream initial_inscription;
   initial_inscription << 0;
@@ -175,6 +181,6 @@ int main() {
   }
   std::cout << "Collisions: " << collisions << std::endl;
   std::cout << "Number PI in its " << (int) log10(mass_2 / mass_1) / 2 + 1 << "th approximation is equal to: ";
-  std::cout << std::setprecision((int) log10(mass_2 / mass_1) / 2 + 1) << (float) collisions / sqrtf((float) (mass_2 / mass_1)) << std::endl;
+  std::cout << std::setprecision((int) log10(mass_2 / mass_1) / 2 + 1) << (float) collisions / sqrtf((float) (mass_2 / mass_1)) << std::endl << std::endl;
   return 0;
 }

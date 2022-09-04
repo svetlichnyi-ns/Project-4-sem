@@ -3,8 +3,9 @@
 #include <SFML/Graphics.hpp>
 #include <math.h>
 #include <sstream>
+#include "scattering.h"
 
-int main() {
+int Monte_Carlo() {
   sf::RenderWindow window(sf::VideoMode(1920, 1080), "Scattering of points");
   window.setFramerateLimit(40);  // this frame rate provides both optimal perception and rather high computational performance
 
@@ -40,7 +41,7 @@ int main() {
   text.setPosition(sf::Vector2f(350.f, 15.f));
 
   int blue_points = 0;  // number of points, depicted inside the circle
-  
+
   while (window.isOpen()) {
     sf::Event event;
     while (window.pollEvent(event)) {
@@ -51,7 +52,7 @@ int main() {
     sf::CircleShape point(2.f, 100000);  // we actually draw not points, but tiny circles, so that they are seen for us
     point.setOrigin(point.getRadius(), point.getRadius());
     point.setPosition(sf::Vector2f((float) (window.getSize().x / 2) - square.getSize().x / 2 + square.getSize().x * static_cast<float>(rand()) / static_cast<float>(RAND_MAX),
-                              (float) (window.getSize().y / 2) - square.getSize().y / 2 + square.getSize().y * static_cast<float>(rand()) / static_cast<float>(RAND_MAX)));
+                                   (float) (window.getSize().y / 2) - square.getSize().y / 2 + square.getSize().y * static_cast<float>(rand()) / static_cast<float>(RAND_MAX)));
     if (pow(square.getPosition().x - point.getPosition().x, 2.f) + pow(square.getPosition().y - point.getPosition().y, 2.f) <= pow(circle.getRadius() + circle.getOutlineThickness(), 2.f)) {
       point.setFillColor(sf::Color::Blue);  // if the point occurs inside the circle or on its border, it becomes blue
       blue_points++;
@@ -64,7 +65,7 @@ int main() {
     num_of_iterations << iterations;
     std::ostringstream pi;
     pi << 4 * (long double) blue_points / iterations; // number pi is calculated via the probability for the point not to occur outside the circle
-    text.setString ("Number of iterations: " + num_of_iterations.str() + "; number pi = " + pi.str());
+    text.setString ("Number of points: " + num_of_iterations.str() + "; number PI = " + pi.str());
     window.draw(point);
     window.draw(text);
     window.display();

@@ -4,11 +4,7 @@
 #include <iostream>
 #include <iomanip>
 #include <cmath>
-
-class complex_number {
-  public:
-    long double real, imaginary;
-};
+#include "Mandelbrot.h"
 
 void Mandelbrot_set (sf::VertexArray& vertex_array, int precision, long double zoom, sf::RenderWindow& window) {
   for (int i = 0; i < (int) window.getSize().y; i++) {
@@ -64,7 +60,7 @@ void Mandelbrot_iterations(long double eps) {
   return;
 }
 
-int main() {
+int Mandelbrot() {
   sf::RenderWindow window (sf::VideoMode(1920, 1080), "Mandelbrot's set");
   sf::VertexArray pointmap (sf::Points, window.getSize().x * window.getSize().y);
   
