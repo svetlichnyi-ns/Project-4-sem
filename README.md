@@ -32,3 +32,4 @@ Before running a project, you should install the SFML library. For example, on L
 So as to run a project, enter the following to the console:  
 make -f Makefile   
 ./project  
+If you're willing to delete object files and executable file, enter: make -f Makefile clean
