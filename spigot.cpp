@@ -1,7 +1,7 @@
 #include <iostream>
 #include <iomanip>
-#include <cstdlib>
 #include <chrono>
+#include <new>
 #include "spigot.h"
 
 int spigot() {
@@ -13,23 +13,31 @@ int spigot() {
     return -1;
   }
   int size = 10 * N / 3;  // the number of columns in a table (it depends on N)
-  int* digits_of_pi = (int*) malloc (N * sizeof(int));  // allocation of memory for the array of digits of PI
-  if (digits_of_pi == NULL) {
-    std::cerr << "Failed to allocate memory via malloc() for an array <<digits_of_pi>>\n";
+  int* digits_of_pi;
+  try {
+    digits_of_pi = new int [N];  // allocation of memory for the array of digits of PI
+  }
+  catch (const std::bad_alloc& e) {
+    std::cerr << "Failed to allocate memory for an array <<digits_of_pi>>: " << e.what() << std::endl;
     return -1;
   }
-  int** table = (int**) malloc ((4 * N) * sizeof(int*));  // allocation of memory for a two-dimensional array (table)
-  if (table == NULL) {
-    std::cerr << "Failed to allocate memory via malloc() for an array <<table>>\n";
-    free(digits_of_pi);
+  int** table;
+  try {
+    table = new int* [4 * N];  // allocation of memory for a two-dimensional array (table)
+  }
+  catch (const std::bad_alloc& e) {
+    delete [] digits_of_pi;
+    std::cerr << "Failed to allocate memory for an array <<table>>: " << e.what() << std::endl;
     return -1;
   }
   for (int i = 0; i < 4 * N; i++) {
-    table[i] = (int*) malloc (size * sizeof(int));
-    if (table[i] == NULL) {
-      free(digits_of_pi);
-      free(table);
-      std::cerr << "Failed to allocate memory via malloc() for the " << i << "th one-dimensional array: <<table[" << i << "]\n";
+    try {
+      table[i] = new int [size];
+    }
+    catch (const std::bad_alloc& e) {
+      delete [] digits_of_pi;
+      delete [] table;
+      std::cerr << "Failed to allocate memory for the " << i << "th one-dimensional array: <<table[" << i << "]: " << e.what() << std::endl;
       return -1;
     }
   }
@@ -77,9 +85,9 @@ int spigot() {
   std::cout << "; it took " << (std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count()) / 1000000.l;
   std::cout << " seconds to calculate PI.\n\n";
   // memory release
-  free(digits_of_pi);
-  for (int i = 0; i < size; i++)
-    free(table[i]);
-  free(table);
+  delete [] digits_of_pi;
+  for (int i = 0; i < 4 * N; i++)
+    delete [] table[i];
+  delete [] table;
   return 0;
 }

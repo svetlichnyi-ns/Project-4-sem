@@ -6,6 +6,7 @@ class Point {  // especially for two-dimensional Monte Carlo method
   private:
     long double x, y;
   public:
+    Point() {}  // constructor by default
     Point(long double x_value, long double y_value) {  // constructor
       x = x_value;
       y = y_value;

@@ -5,9 +5,9 @@
 #include <pthread.h>
 #include <iostream>
 #include <iomanip>
-#include <cstdlib>
 #include <chrono>
 #include <cmath>
+#include <new>
 #include "Buffon.h"
 
 int count;  // the number of intersections of needles and lines
@@ -113,16 +113,22 @@ int Buffon_needle() {
   needles.resize(2*NumOfNeedles);
   int NumOfNeedlesPerThread = NumOfNeedles / NumOfThreads;  // the number of needles that each individual thread must scatter
   // create an array of threads' identificators
-  pthread_t* threads = (pthread_t*) malloc (NumOfThreads * sizeof(pthread_t));
-  if (threads == NULL) {
-    std::cerr << "Failed to allocate memory for an array of threads' identificators via malloc()\n";
-    return -1;
+  pthread_t* threads;
+  try {
+    threads = new pthread_t [NumOfThreads];
+  }
+  catch (const std::bad_alloc& e) {
+    std::cerr << "Failed to allocate memory for an array of threads' identificators: " << e.what() << std::endl;
+    return -1; 
   }
   // create an array of structures
-  Args* ArrayOfStructures = (Args*) malloc (NumOfThreads * sizeof(Args));
-  if (ArrayOfStructures == NULL) {
-    std::cerr << "Failed to allocate memory for an array of structures via malloc()\n";
-    free(threads);
+  Args* ArrayOfStructures;
+  try {
+    ArrayOfStructures = new Args [NumOfThreads];
+  }
+  catch (const std::bad_alloc& e) {
+    std::cerr << "Failed to allocate memory for an array of structures: " << e.what() << std::endl;
+    delete [] threads;
     return -1;
   }
   // fill in the fields of all structures
@@ -136,14 +142,14 @@ int Buffon_needle() {
     // creation of threads
     if (pthread_create(&threads[j], NULL, spreader, &ArrayOfStructures[j]) != 0) {
       std::cerr << "Failed to create a thread!\n";
-      free(threads);
-      free(ArrayOfStructures);
+      delete [] threads;
+      delete [] ArrayOfStructures;
       return -1;
     }
     // checking whether an error occurred within a function
     if (ArrayOfStructures[j].st_error == true) {
-      free(threads);
-      free(ArrayOfStructures);
+      delete [] threads;
+      delete [] ArrayOfStructures;
       return -1;
     }
   }
@@ -151,8 +157,8 @@ int Buffon_needle() {
   for (int j = 0; j < NumOfThreads; j++) {
     if (pthread_join(threads[j], NULL) != 0) {
       std::cerr << "Failed to join a thread!\n";
-      free(threads);
-      free(ArrayOfStructures);
+      delete [] threads;
+      delete [] ArrayOfStructures;
       return -1;
     }
   }
@@ -168,19 +174,19 @@ int Buffon_needle() {
     RemainingNeedles.st_NumOfLines = NumOfLines;
     if (pthread_create(&remaining_needles, NULL, spreader, &RemainingNeedles) != 0) {
       std::cerr << "Failed to create a thread!\n";
-      free(threads);
-      free(ArrayOfStructures);
+      delete [] threads;
+      delete [] ArrayOfStructures;
       return -1;
     }
     if (RemainingNeedles.st_error == true) {
-      free(threads);
-      free(ArrayOfStructures);
+      delete [] threads;
+      delete [] ArrayOfStructures;
       return -1;
     }
     if (pthread_join(remaining_needles, NULL) != 0) {
       std::cerr << "Failed to join a thread!\n";
-      free(threads);
-      free(ArrayOfStructures);
+      delete [] threads;
+      delete [] ArrayOfStructures;
       return -1;
     }
   }
@@ -194,8 +200,8 @@ int Buffon_needle() {
   // the destroyment of the mutex
   if (pthread_mutex_destroy(&mutex) != 0) {
     std::cerr << "Failed to destroy a mutex!\n";
-    free(threads);
-    free(ArrayOfStructures);
+    delete [] threads;
+    delete [] ArrayOfStructures;
     return -1;
   }
 
@@ -211,7 +217,7 @@ int Buffon_needle() {
         window.close();
     }
   }
-  free(threads);
-  free(ArrayOfStructures);
+  delete [] threads;
+  delete [] ArrayOfStructures;
   return 0;
 }

@@ -8,7 +8,6 @@
 #include <iomanip>
 #include <sstream>
 #include <pthread.h>
-#include <cstdlib>
 #include <cstdint>
 #include <chrono>
 #include <cmath>
@@ -16,6 +15,7 @@
 #include <vector>
 #include <stdio.h>
 #include <cmath>
+#include <new>
 #include "decoration.h"
 #include "blocks.h"
 #include "Buffon.h"

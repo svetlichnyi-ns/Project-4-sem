@@ -3,9 +3,9 @@
 #include <iomanip>
 #include <functional>
 #include <vector>
-#include <cstdlib>
 #include <chrono>
 #include <cmath>
+#include <new>
 #include "integral.h"
 
 long double function_1 (long double x) {
@@ -96,9 +96,12 @@ long double Integral (uint8_t method, long double a, long double b, unsigned lon
     case 7:  // two-dimensional Monte Carlo method (estimation of areas)
     {
       unsigned long int count = 0;  // counter of the number of points, which are located in the area under the graph of the function
-      Point* Points = (Point*) malloc (N * sizeof(Point));  // a dynamic array of instances of class Point
-      if (Points == NULL) {
-        std::cout << "Failed to allocate memory via malloc()\n";
+      Point* Points;
+      try {
+        Points = new Point [N];  // a dynamic array of instances of class Point
+      }
+      catch (const std::bad_alloc& e) {
+        std::cerr << "Failed to allocate memory: " << e.what() << std::endl;
         return -1.l;
       }
       for (unsigned long int i = 0; i < N; i++) {
@@ -110,7 +113,7 @@ long double Integral (uint8_t method, long double a, long double b, unsigned lon
           count++;
       }
       integral = (10.l * (b - a)) * (long double) count / (long double) N;  // integral is calculated, based on the probability for each point to occur under the function's graph
-      free(Points);
+      delete [] Points;
       break;
     }
     default:
