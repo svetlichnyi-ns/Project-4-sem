@@ -30,6 +30,6 @@ As a result, I created a program that supports eight methods of computation of n
   
 Before running a project, you should install the SFML library. For example, on Linux you should write the following: sudo apt-get install libsfml-dev  
 So as to run a project, enter the following to the console:  
-make -f Makefile   
+make  
 ./project  
-If you're willing to delete object files and executable file, enter: make -f Makefile clean
+If you're willing to delete object files and executable file, enter: make clean
