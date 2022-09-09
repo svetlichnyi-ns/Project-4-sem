@@ -8,6 +8,30 @@
 #include <new>
 #include "integral.h"
 
+class Point {  // especially for two-dimensional Monte Carlo method
+  private:
+    long double x, y;
+  public:
+    Point() {}  // constructor by default
+    Point(long double x_value, long double y_value) {  // constructor
+      x = x_value;
+      y = y_value;
+    }
+    ~Point() {}  // destructor
+    long double get_X() {
+      return x;
+    }
+    void set_X(long double x_value) {
+      x = x_value;
+    }
+    long double get_Y() {
+      return y;
+    }
+    void set_Y(long double y_value) {
+      y = y_value;
+    }
+};
+
 long double function_1 (long double x) {
   return 4.l / (1.l + powl(x, 2.l));
 }

@@ -15,6 +15,15 @@ int count;  // the number of intersections of needles and lines
 sf::VertexArray needles(sf::Lines, 0);  // an array of vertices, forming needles
 std::mutex mutex;  // the presence of a critical section requires the synchronization of threads
 
+// the arguments of a function, called on a thread, are "wrapped" in a structure
+typedef struct ArgumentsForSpreader {
+  int st_from;  // starting needle number
+  int st_to;  // ending needle number
+  float st_width;  // the interval between neighbouring lines
+  float st_length;  // the length of each needle
+  int st_NumOfLines;  // the total number of lines
+} Args;
+
 void spreader(void* args) {  // a function, called on a thread
   Args* arg = reinterpret_cast<Args*> (args);
   for (int j = arg->st_from; j < arg->st_to; j++) {
