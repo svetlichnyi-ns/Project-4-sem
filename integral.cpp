@@ -4,6 +4,7 @@
 #include <functional>
 #include <vector>
 #include <chrono>
+#include <random>
 #include <cmath>
 #include <new>
 #include "integral.h"
@@ -112,13 +113,18 @@ long double Integral (methods_t method, long double a, long double b, unsigned l
       return Romberg_integral[19][19];  // the result contains in the lower right corner of the lower-triangular matrix
     }
     case one_dim:
+    {
+      std::random_device rd;
+      std::default_random_engine eng(rd());
+      std::uniform_real_distribution<> distr(0, 1);
       for (long unsigned int step = 0; step < N; step++) {
         // choose an arbitrary abscissa on each interval of integration
-        const long double x_random = a + (long double) step * length + length * static_cast <long double> (rand()) / static_cast <long double> (RAND_MAX);
+        const long double x_random = a + (long double) step * length + length * distr(eng);
         integral += func(x_random);
       }
       integral *= length;
       break;
+    }
     case two_dim:
     {
       unsigned long int count = 0;  // counter of the number of points, which are located in the area under the graph of the function
@@ -130,11 +136,14 @@ long double Integral (methods_t method, long double a, long double b, unsigned l
         std::cerr << "Failed to allocate memory: " << e.what() << std::endl;
         return -1.l;
       }
+      std::random_device rd;
+      std::default_random_engine eng(rd());
+      std::uniform_real_distribution<> distr(0, 1);
       for (unsigned long int i = 0; i < N; i++) {
         // a random abscissa, belonging to the segment [a; b]
-        Points[i].set_X(a + (b - a) * static_cast <long double> (rand()) / static_cast <long double> (RAND_MAX));
+        Points[i].set_X(a + (b - a) * distr(eng));
         // a random ordinate, belonging to the segment [0; 10] (the upper value is taken with a margin)
-        Points[i].set_Y(10.l * static_cast <long double> (rand()) / static_cast <long double> (RAND_MAX));
+        Points[i].set_Y(10.l * distr(eng));
         if (Points[i].get_Y() <= func(Points[i].get_X()))  // if a point occurs under the function's graph, we increment count
           count++;
       }

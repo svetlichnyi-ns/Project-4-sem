@@ -1,7 +1,9 @@
 #include <SFML/Window.hpp>
 #include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
-#include <math.h>
+#include <cmath>
+#include <chrono>
+#include <random>
 #include <sstream>
 #include "scattering.h"
 
@@ -42,6 +44,10 @@ int Monte_Carlo() {
 
   int blue_points = 0;  // number of points, depicted inside the circle
 
+  std::random_device rd;
+  std::default_random_engine eng(rd());
+  std::uniform_real_distribution<> distr(0, 1);
+
   while (window.isOpen()) {
     sf::Event event;
     while (window.pollEvent(event)) {
@@ -51,9 +57,9 @@ int Monte_Carlo() {
 
     sf::CircleShape point(2.f, 100000);  // we actually draw not points, but tiny circles, so that they are seen for us
     point.setOrigin(point.getRadius(), point.getRadius());
-    point.setPosition(sf::Vector2f((float) (window.getSize().x / 2) - square.getSize().x / 2 + square.getSize().x * static_cast<float>(rand()) / static_cast<float>(RAND_MAX),
-                                   (float) (window.getSize().y / 2) - square.getSize().y / 2 + square.getSize().y * static_cast<float>(rand()) / static_cast<float>(RAND_MAX)));
-    if (pow(square.getPosition().x - point.getPosition().x, 2.f) + pow(square.getPosition().y - point.getPosition().y, 2.f) <= pow(circle.getRadius() + circle.getOutlineThickness(), 2.f)) {
+    point.setPosition(sf::Vector2f((float) (window.getSize().x / 2) - square.getSize().x / 2 + square.getSize().x * (float) distr(eng),
+                                   (float) (window.getSize().y / 2) - square.getSize().y / 2 + square.getSize().y * (float) distr(eng)));
+    if (powf(square.getPosition().x - point.getPosition().x, 2.f) + powf(square.getPosition().y - point.getPosition().y, 2.f) <= powf(circle.getRadius() + circle.getOutlineThickness(), 2.f)) {
       point.setFillColor(sf::Color::Blue);  // if the point occurs inside the circle or on its border, it becomes blue
       blue_points++;
     }

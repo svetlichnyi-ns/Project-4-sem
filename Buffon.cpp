@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
+#include <random>
 #include <thread>
 #include <mutex>
 #include <iostream>
@@ -26,13 +27,16 @@ typedef struct ArgumentsForSpreader {
 
 void spreader(void* args) {  // a function, called on a thread
   Args* arg = reinterpret_cast<Args*> (args);
+  std::random_device rd;
+  std::default_random_engine eng(rd());
+  std::uniform_real_distribution<> distr(0, 1);
   for (int j = arg->st_from; j < arg->st_to; j++) {
     // randomly choose an angle for each thrown needle
-    float angle = 2.f * 3.14159265358979f * static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+    float angle = 2.f * M_PIf32 * (float) distr(eng);
     // randomly choose an abscissa for the "left end" of each thrown needle
-    float x = 1920.f * static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+    float x = 1920.f * (float) distr(eng);
     // randomly choose an ordinate for the "left end" of each thrown needle
-    float y = 1080.f * static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+    float y = 1080.f * (float) distr(eng);
     needles[2*j].position = sf::Vector2f(x, y);
     needles[2*j].color = sf::Color::Black;
     // the position of the "right end" of a needle is determined by the position of its "left end", the needle's length and its angle
