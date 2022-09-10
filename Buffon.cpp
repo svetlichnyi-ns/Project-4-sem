@@ -9,7 +9,7 @@
 #include <iomanip>
 #include <chrono>
 #include <cmath>
-#include <new>
+#include <vector>
 #include "Buffon.h"
 
 int count;  // the number of intersections of needles and lines
@@ -67,7 +67,7 @@ int Buffon_needle() {
   std::cout << "Enter the interval between neighbouring lines: ";
   std::cin >> width;
   if (width <= 0) {
-    std::cerr << "The interval between neighbouring lines must be positive\n";
+    std::cerr << "The interval between neighbouring lines must be positive.\n";
     return -1;
   }
 
@@ -75,7 +75,7 @@ int Buffon_needle() {
   std::cout << "Enter the number of needles you want to scatter: ";
   std::cin >> NumOfNeedles;
   if (NumOfNeedles <= 0) {
-    std::cerr << "The number of needles must be positive\n";
+    std::cerr << "The number of needles must be positive.\n";
     return -1;
   }
 
@@ -83,7 +83,7 @@ int Buffon_needle() {
   std::cout << "Enter the length of each needle: ";
   std::cin >> length;
   if (length <= 0) {
-    std::cerr << "The length of each needle must be positive\n";
+    std::cerr << "The length of each needle must be positive.\n";
     return -1;
   }
 
@@ -91,7 +91,7 @@ int Buffon_needle() {
   std::cout << "Enter the preferable number of threads: ";
   std::cin >> NumOfThreads;
   if (NumOfThreads <= 0) {
-    std::cerr << "The number of threads must be positive\n";
+    std::cerr << "The number of threads must be positive.\n";
     return -1;
   }
 
@@ -112,35 +112,18 @@ int Buffon_needle() {
   // new size of the array of vertices, forming needles
   needles.resize(2*NumOfNeedles);
   int NumOfNeedlesPerThread = NumOfNeedles / NumOfThreads;  // the number of needles that each individual thread must scatter
-  // create an array of threads
-  std::thread* threads;
-  try {
-    threads = new std::thread [NumOfThreads];
-  }
-  catch (const std::bad_alloc& e) {
-    std::cerr << "Failed to allocate memory for an array of threads: " << e.what() << std::endl;
-    return -1;
-  }
-  // create an array of structures
-  Args* ArrayOfStructures;
-  try {
-    ArrayOfStructures = new Args [NumOfThreads];
-  }
-  catch (const std::bad_alloc& e) {
-    std::cerr << "Failed to allocate memory for an array of structures: " << e.what() << std::endl;
-    delete [] threads;
-    return -1;
-  }
+  std::vector <std::thread> threads(NumOfThreads);  // create a vector of threads
+  std::vector <Args> VectorOfStructures(NumOfThreads);  // create a vector of structures
   // fill in the fields of all structures
   for (int j = 0; j < NumOfThreads; j++) {
     // needles are subsequently and uniformly distributed among all threads
-    ArrayOfStructures[j].st_from = j * NumOfNeedlesPerThread;
-    ArrayOfStructures[j].st_to = (j + 1) * NumOfNeedlesPerThread;
-    ArrayOfStructures[j].st_length = length;
-    ArrayOfStructures[j].st_width = width;
-    ArrayOfStructures[j].st_NumOfLines = NumOfLines;
+    VectorOfStructures[j].st_from = j * NumOfNeedlesPerThread;
+    VectorOfStructures[j].st_to = (j + 1) * NumOfNeedlesPerThread;
+    VectorOfStructures[j].st_length = length;
+    VectorOfStructures[j].st_width = width;
+    VectorOfStructures[j].st_NumOfLines = NumOfLines;
     // creation of threads
-    threads[j] = std::thread(spreader, &ArrayOfStructures[j]);
+    threads[j] = std::thread(spreader, &VectorOfStructures[j]);
   }
   // waiting for all threads to finish
   for (int j = 0; j < NumOfThreads; j++) {
@@ -177,7 +160,5 @@ int Buffon_needle() {
         window.close();
     }
   }
-  delete [] threads;
-  delete [] ArrayOfStructures;
   return 0;
 }

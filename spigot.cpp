@@ -1,7 +1,7 @@
 #include <iostream>
 #include <iomanip>
 #include <chrono>
-#include <new>
+#include <vector>
 #include "spigot.h"
 
 int spigot() {
@@ -9,38 +9,12 @@ int spigot() {
   int N;
   std::cin >> N;
   if (N < 2) {
-    std::cerr << "This number should be not less than two (not less than one digit after the decimal point)\n";
+    std::cerr << "This number should be not less than two (not less than one digit after the decimal point).\n";
     return -1;
   }
   int size = 10 * N / 3;  // the number of columns in a table (it depends on N)
-  int* digits_of_pi;
-  try {
-    digits_of_pi = new int [N];  // allocation of memory for the array of digits of PI
-  }
-  catch (const std::bad_alloc& e) {
-    std::cerr << "Failed to allocate memory for an array <<digits_of_pi>>: " << e.what() << std::endl;
-    return -1;
-  }
-  int** table;
-  try {
-    table = new int* [4 * N];  // allocation of memory for a two-dimensional array (table)
-  }
-  catch (const std::bad_alloc& e) {
-    delete [] digits_of_pi;
-    std::cerr << "Failed to allocate memory for an array <<table>>: " << e.what() << std::endl;
-    return -1;
-  }
-  for (int i = 0; i < 4 * N; i++) {
-    try {
-      table[i] = new int [size];
-    }
-    catch (const std::bad_alloc& e) {
-      delete [] digits_of_pi;
-      delete [] table;
-      std::cerr << "Failed to allocate memory for the " << i << "th one-dimensional array: <<table[" << i << "]: " << e.what() << std::endl;
-      return -1;
-    }
-  }
+  std::vector<int> digits_of_pi(N);  // create a vector of digits of PI
+  std::vector<std::vector<int>> table(4 * N, std::vector<int>(size));  // create a table that is necessary for calculation of PI's digits
   std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();  // start the timer
   for (int i = 0; i < size; i++)  // initialization of the zeroth row by twenties
     table[0][i] = 20;
@@ -84,10 +58,5 @@ int spigot() {
   std::setprecision(10);
   std::cout << "; it took " << (std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count()) / 1000000.l;
   std::cout << " seconds to calculate PI.\n\n";
-  // memory release
-  delete [] digits_of_pi;
-  for (int i = 0; i < 4 * N; i++)
-    delete [] table[i];
-  delete [] table;
   return 0;
 }

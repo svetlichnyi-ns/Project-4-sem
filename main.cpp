@@ -7,7 +7,8 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
-#include <pthread.h>
+#include <thread>
+#include <mutex>
 #include <cstdint>
 #include <chrono>
 #include <random>
@@ -15,8 +16,6 @@
 #include <functional>
 #include <vector>
 #include <stdio.h>
-#include <cmath>
-#include <new>
 #include "decoration.h"
 #include "blocks.h"
 #include "Buffon.h"

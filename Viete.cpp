@@ -4,21 +4,18 @@
 #include <cstdint>
 #include <chrono>
 #include <cmath>
-#include <new>
+#include <vector>
 #include "Viete.h"
 
 int Viete() {
   uint64_t N;  // the number of factors that make up the product
   std::cout << "Enter the number of factors in Viete's formula: ";
   std::cin >> N;
-  long double* factors;
-  try {
-    factors = new long double [N];  // a dynamic array of factors
-  }
-  catch (const std::bad_alloc& e) {
-    std::cerr << "Failed to allocate memory: " << e.what() << std::endl;
+  if (N <= 0) {
+    std::cerr << "The number of factors must be positive.\n";
     return -1;
   }
+  std::vector <long double> factors(N);
   std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();  // start the timer
   factors[0] = 2.l / sqrtl(2.l);  // initialize the zeroth factor
   long double pi = 2.l * factors[0];
@@ -30,6 +27,5 @@ int Viete() {
   std::cout << "Number PI, obtained as a product of " << N << " factors, is equal to: " << std::setprecision(15) << pi << ";\n";
   std::cout << "The calculation error is: " << fabsl(pi - M_PIl) << ";\n";
   std::cout << "The calculation took " << (std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count()) / 1'000'000'000.l << " seconds.\n\n";
-  delete [] factors;  // free allocated memory
   return 0;
 }

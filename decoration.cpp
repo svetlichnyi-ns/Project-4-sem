@@ -5,9 +5,9 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <iomanip>
-#include <pthread.h>
+#include <thread>
+#include <mutex>
 #include <cmath>
-#include <assert.h>
 #include <chrono>
 #include "decoration.h"
 

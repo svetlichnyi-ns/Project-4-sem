@@ -23,7 +23,7 @@ int blocks() {
   std::cout << "Enter the mass of the first block: ";
   std::cin >> mass_1;
   if (mass_1 <= 0) {
-    std::cerr << "The mass must be strictly positive\n";
+    std::cerr << "The mass must be strictly positive.\n";
     return -1;
   }
 
@@ -31,7 +31,7 @@ int blocks() {
   std::cout << "Enter the mass of the second block: ";
   std::cin >> mass_2;
   if (mass_2 <= 0) {
-    std::cerr << "The mass must be strictly positive\n";
+    std::cerr << "The mass must be strictly positive.\n";
     return -1;
   }
 

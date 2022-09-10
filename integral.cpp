@@ -6,7 +6,6 @@
 #include <chrono>
 #include <random>
 #include <cmath>
-#include <new>
 #include "integral.h"
 
 enum methods_t {left_rectangle, right_rectangle, middle_rectangle, trapezoidal, Simpson, Romberg, one_dim, two_dim};
@@ -128,14 +127,7 @@ long double Integral (methods_t method, long double a, long double b, unsigned l
     case two_dim:
     {
       unsigned long int count = 0;  // counter of the number of points, which are located in the area under the graph of the function
-      Point* Points;
-      try {
-        Points = new Point [N];  // a dynamic array of instances of class Point
-      }
-      catch (const std::bad_alloc& e) {
-        std::cerr << "Failed to allocate memory: " << e.what() << std::endl;
-        return -1.l;
-      }
+      std::vector <Point> Points(N);
       std::random_device rd;
       std::default_random_engine eng(rd());
       std::uniform_real_distribution<> distr(0, 1);
@@ -148,7 +140,6 @@ long double Integral (methods_t method, long double a, long double b, unsigned l
           count++;
       }
       integral = (10.l * (b - a)) * (long double) count / (long double) N;  // integral is calculated, based on the probability for each point to occur under the function's graph
-      delete [] Points;
       break;
     }
     default:
@@ -206,7 +197,7 @@ int integral_computation() {
   unsigned long NumOfSegments;
   std::cin >> NumOfSegments;
   if (NumOfSegments < 1) {
-    std::cerr << "The number of segments of integration must be positive\n";
+    std::cerr << "The number of segments of integration must be positive.\n";
     return -1;
   }
   // all currently available methods
