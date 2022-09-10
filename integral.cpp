@@ -8,6 +8,8 @@
 #include <new>
 #include "integral.h"
 
+enum methods_t {left_rectangle, right_rectangle, middle_rectangle, trapezoidal, Simpson, Romberg, one_dim, two_dim};
+
 class Point {  // especially for two-dimensional Monte Carlo method
   private:
     long double x, y;
@@ -44,32 +46,32 @@ long double function_3 (long double x) {
   return 2.l * sqrtl(1.l - powl(x, 2.l));
 }
 
-long double Integral (uint8_t method, long double a, long double b, unsigned long N, long double (*func) (long double)) {
+long double Integral (methods_t method, long double a, long double b, unsigned long N, long double (*func) (long double)) {
   const long double length = (b - a) / N;  // the length of each segment of integration
   long double integral = 0.l;  // an initial value of the integral
   switch (method) {
-    case 0:  // left rectangle method
+    case left_rectangle:
       for (long unsigned int step = 0; step < N; step++) {
         const long double x_left = a + step * length;
         integral += func(x_left);
       }
       integral *= length;
       break;
-    case 1:  // right rectangle method
+    case right_rectangle:
       for (long unsigned int step = 0; step < N; step++) {
         const long double x_right = a + (step + 1) * length;
         integral += func(x_right);
       }
       integral *= length;
       break;
-    case 2:  // middle rectangle method
+    case middle_rectangle:
       for (long unsigned int step = 0; step < N; step++) {
         const long double x_middle = a + length * (static_cast<long double> (step) + 0.5l);
         integral += func(x_middle);
       }
       integral *= length;
       break;
-    case 3:  // trapezoidal method
+    case trapezoidal:
       for (long unsigned int step = 0; step < N; step++) {
         const long double x_1 = a + step * length;
         const long double x_2 = a + (step + 1) * length;
@@ -78,7 +80,7 @@ long double Integral (uint8_t method, long double a, long double b, unsigned lon
       integral /= 2.l;
       integral *= length;
       break;
-    case 4:  // parabola method (Simpson's method)
+    case Simpson:
       for (long unsigned int step = 0; step < N; step++) {
         const long double x_left = a + step * length;
         const long double x_middle = a + (static_cast<long double> (step) + 0.5l) * length;
@@ -88,10 +90,10 @@ long double Integral (uint8_t method, long double a, long double b, unsigned lon
       integral /= 6.l;
       integral *= length;
       break;
-    case 5:  // Romberg's method
+    case Romberg:
     {
       std::vector<std::vector<long double>> Romberg_integral(20, std::vector<long double> (20));  // the implementation of a square lower-triangular matrix
-      Romberg_integral.front().front() = Integral(3, a, b, 1, func);  // trapezoidal integral (method 3)
+      Romberg_integral.front().front() = Integral(trapezoidal, a, b, 1, func);  // trapezoidal integral (method 3)
       long double Romberg_length = b - a;  // current length of the segment of integration
       for (unsigned long int step = 1; step < Romberg_integral.size(); step++) {
         Romberg_length /= 2.l;
@@ -109,7 +111,7 @@ long double Integral (uint8_t method, long double a, long double b, unsigned lon
       }
       return Romberg_integral[19][19];  // the result contains in the lower right corner of the lower-triangular matrix
     }
-    case 6:  // one-dimensional Monte Carlo method
+    case one_dim:
       for (long unsigned int step = 0; step < N; step++) {
         // choose an arbitrary abscissa on each interval of integration
         const long double x_random = a + (long double) step * length + length * static_cast <long double> (rand()) / static_cast <long double> (RAND_MAX);
@@ -117,7 +119,7 @@ long double Integral (uint8_t method, long double a, long double b, unsigned lon
       }
       integral *= length;
       break;
-    case 7:  // two-dimensional Monte Carlo method (estimation of areas)
+    case two_dim:
     {
       unsigned long int count = 0;  // counter of the number of points, which are located in the area under the graph of the function
       Point* Points;
@@ -147,30 +149,30 @@ long double Integral (uint8_t method, long double a, long double b, unsigned lon
   return integral;
 }
 
-int usage_of_method (uint8_t method, long double a, long double b, unsigned long N, long double (*func) (long double)) {
+int usage_of_method (methods_t method, long double a, long double b, unsigned long N, long double (*func) (long double)) {
   switch (method) {
-    case 0:
+    case left_rectangle:
       std::cout << "Wait for the results of usage of left rectangle method...\n";
       break;
-    case 1:
+    case right_rectangle:
       std::cout << "Wait for the results of usage of right rectangle method...\n";
       break;
-    case 2:
+    case middle_rectangle:
       std::cout << "Wait for the results of usage of middle rectangle method...\n";
       break;
-    case 3:
+    case trapezoidal:
       std::cout << "Wait for the results of usage of trapezoidal method...\n";
       break;
-    case 4:
+    case Simpson:
       std::cout << "Wait for the results of usage of parabola method (Simpson's method)...\n";
       break;
-    case 5:
+    case Romberg:
       std::cout << "Wait for the results of usage of Romberg's method...\n";
       break;
-    case 6:
+    case one_dim:
       std::cout << "Wait for the results of usage of one-dimensional Monte Carlo method...\n";
       break;
-    case 7:
+    case two_dim:
       std::cout << "Wait for the results of usage of two-dimensional Monte Carlo method (estimation of areas)...\n";
       break;
     default:
@@ -198,10 +200,8 @@ int integral_computation() {
     std::cerr << "The number of segments of integration must be positive\n";
     return -1;
   }
-
-  std::vector<uint8_t> methods = {};  // all currently available methods
-  for (uint8_t i = 0; i < 8; i++)
-    methods.push_back(i);
+  // all currently available methods
+  std::vector<methods_t> methods = {left_rectangle, right_rectangle, middle_rectangle, trapezoidal, Simpson, Romberg, one_dim, two_dim};
   std::cout << "The first integral expression" << std::endl;
   for (uint8_t i = 0; i < methods.size(); i++) {
     if (usage_of_method(methods.at(i), 0.l, 1.l, NumOfSegments, function_1) == -1)
