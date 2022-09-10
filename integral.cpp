@@ -212,18 +212,18 @@ int integral_computation() {
   // all currently available methods
   std::vector<methods_t> methods = {left_rectangle, right_rectangle, middle_rectangle, trapezoidal, Simpson, Romberg, one_dim, two_dim};
   std::cout << "The first integral expression" << std::endl;
-  for (uint8_t i = 0; i < methods.size(); i++) {
-    if (usage_of_method(methods.at(i), 0.l, 1.l, NumOfSegments, function_1) == -1)
+  for (auto i : methods) {
+    if (usage_of_method(i, 0.l, 1.l, NumOfSegments, function_1) == -1)
       return -1;
   }
   std::cout << "The second integral expression" << std::endl;
-  for (uint8_t i = 0; i < methods.size(); i++) {
-    if (usage_of_method(methods.at(i), 0.l, 0.5l, NumOfSegments, function_2) == -1)
+  for (auto i : methods) {
+    if (usage_of_method(i, 0.l, 0.5l, NumOfSegments, function_2) == -1)
       return -1;
   }
   std::cout << "The third integral expression" << std::endl;
-  for (uint8_t i = 0; i < methods.size(); i++) {
-    if (usage_of_method(methods.at(i), -1.l, 1.l, NumOfSegments, function_3) == -1)
+  for (auto i : methods) {
+    if (usage_of_method(i, -1.l, 1.l, NumOfSegments, function_3) == -1)
       return -1;
   }
   return 0;

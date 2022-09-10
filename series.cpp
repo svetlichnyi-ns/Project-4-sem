@@ -69,9 +69,9 @@ int calculation_of_pi_via_series (series_t way, int N) {
 int series() {
   // vector of ways of calculation of PI
   std::vector<series_t> ways = {Gregory_Leibniz, Madhava, Nilakantha, Euler, Wallis};
-  for (int j = 0; j < (int) ways.size(); j++) {
+  for (auto j : ways) {
     for (int i = 10; i < 100'000'000; i *= 10) {
-      if (calculation_of_pi_via_series(ways.at(j), i) == -1)
+      if (calculation_of_pi_via_series(j, i) == -1)
         return -1;
     }
     std::cout << '\n';
