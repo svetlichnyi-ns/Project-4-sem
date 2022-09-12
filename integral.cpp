@@ -4,35 +4,12 @@
 #include <functional>
 #include <vector>
 #include <chrono>
+#include <cstdlib>
 #include <random>
 #include <cmath>
 #include "integral.h"
 
 enum methods_t {left_rectangle, right_rectangle, middle_rectangle, trapezoidal, Simpson, Romberg, one_dim, two_dim};
-
-class Point {  // especially for two-dimensional Monte Carlo method
-  private:
-    long double x, y;
-  public:
-    Point() {}  // constructor by default
-    Point(long double x_value, long double y_value) {  // constructor
-      x = x_value;
-      y = y_value;
-    }
-    ~Point() {}  // destructor
-    long double get_X() {
-      return x;
-    }
-    void set_X(long double x_value) {
-      x = x_value;
-    }
-    long double get_Y() {
-      return y;
-    }
-    void set_Y(long double y_value) {
-      y = y_value;
-    }
-};
 
 long double function_1 (long double x) {
   return 4.l / (1.l + powl(x, 2.l));
@@ -113,6 +90,7 @@ long double Integral (methods_t method, long double a, long double b, unsigned l
     }
     case one_dim:
     {
+      // make preparations for a random number generator
       std::random_device rd;
       std::default_random_engine eng(rd());
       std::uniform_real_distribution<> distr(0, 1);
@@ -127,7 +105,12 @@ long double Integral (methods_t method, long double a, long double b, unsigned l
     case two_dim:
     {
       unsigned long int count = 0;  // counter of the number of points, which are located in the area under the graph of the function
-      std::vector <Point> Points(N);
+      Point* Points = (Point*) malloc (N * sizeof(Point));  // a dynamic array of instances of class Point
+      if (Points == NULL) {
+        std::cout << "Failed to allocate memory via malloc()\n";
+        return -1.l;
+      }
+      // make preparations for a random number generator
       std::random_device rd;
       std::default_random_engine eng(rd());
       std::uniform_real_distribution<> distr(0, 1);
@@ -140,6 +123,7 @@ long double Integral (methods_t method, long double a, long double b, unsigned l
           count++;
       }
       integral = (10.l * (b - a)) * (long double) count / (long double) N;  // integral is calculated, based on the probability for each point to occur under the function's graph
+      free(Points);
       break;
     }
     default:

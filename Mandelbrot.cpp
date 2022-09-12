@@ -6,11 +6,6 @@
 #include <cmath>
 #include "Mandelbrot.h"
 
-class complex_number {
-  public:
-    long double real, imaginary;
-};
-
 void Mandelbrot_set (sf::VertexArray& vertex_array, int precision, long double zoom, sf::RenderWindow& window) {
   for (int i = 0; i < (int) window.getSize().y; i++) {
     for (int j = 0; j < (int) window.getSize().x; j++) {

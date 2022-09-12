@@ -1,7 +1,7 @@
 #include <iostream>
 #include <iomanip>
 #include <chrono>
-#include <vector>
+#include <cstdlib>
 #include "spigot.h"
 
 int spigot() {
@@ -13,8 +13,26 @@ int spigot() {
     return -1;
   }
   int size = 10 * N / 3;  // the number of columns in a table (it depends on N)
-  std::vector<int> digits_of_pi(N);  // create a vector of digits of PI
-  std::vector<std::vector<int>> table(4 * N, std::vector<int>(size));  // create a table that is necessary for calculation of PI's digits
+  int* digits_of_pi = (int*) malloc (N * sizeof(int));  // allocation of memory for the array of digits of PI
+  if (digits_of_pi == NULL) {
+    std::cerr << "Failed to allocate memory via malloc() for an array <<digits_of_pi>>\n";
+    return -1;
+  }
+  int** table = (int**) malloc ((4 * N) * sizeof(int*));  // allocation of memory for a two-dimensional array (table)
+  if (table == NULL) {
+    std::cerr << "Failed to allocate memory via malloc() for an array <<table>>\n";
+    free(digits_of_pi);
+    return -1;
+  }
+  for (int i = 0; i < 4 * N; i++) {
+    table[i] = (int*) malloc (size * sizeof(int));
+    if (table[i] == NULL) {
+      free(digits_of_pi);
+      free(table);
+      std::cerr << "Failed to allocate memory via malloc() for the " << i << "th one-dimensional array: <<table[" << i << "]\n";
+      return -1;
+    }
+  }
   std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();  // start the timer
   for (int i = 0; i < size; i++)  // initialization of the zeroth row by twenties
     table[0][i] = 20;
@@ -58,5 +76,10 @@ int spigot() {
   std::setprecision(10);
   std::cout << "; it took " << (std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count()) / 1000000.l;
   std::cout << " seconds to calculate PI.\n\n";
+  // memory release
+  free(digits_of_pi);
+  for (int i = 0; i < 4 * N; i++)
+    free(table[i]);
+  free(table);
   return 0;
 }

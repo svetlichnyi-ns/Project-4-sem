@@ -11,7 +11,6 @@
 #include <chrono>
 #include "decoration.h"
 
-// this function draws a button with an inscription on it
 void SetButton (sf::RenderWindow& window, sf::Vector2f button_position, std::string button_content, sf::Color text_color) {
   sf::RectangleShape button;
   button.setSize(sf::Vector2f(800.f, 150.f));
@@ -37,7 +36,6 @@ void SetButton (sf::RenderWindow& window, sf::Vector2f button_position, std::str
   return;
 }
 
-// an auxiliary function that displays a notification (about the necessity to look at the console) on the screen
 void notification(sf::RenderWindow& window) {
   sf::RenderWindow window_notification(sf::VideoMode(1920, 1080), "Notification");
   window_notification.clear(sf::Color::White);
@@ -65,7 +63,6 @@ void notification(sf::RenderWindow& window) {
   return;
 }
 
-// an auxiliary function that displays reference information on the screen
 void reference_information(const std::string &filename, sf::Vector2f size) {
   sf::RenderWindow window_info(sf::VideoMode((unsigned int) size.x, (unsigned int) size.y), "Reference information");
   

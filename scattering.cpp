@@ -43,7 +43,7 @@ int Monte_Carlo() {
   text.setPosition(sf::Vector2f(350.f, 15.f));
 
   int blue_points = 0;  // number of points, depicted inside the circle
-
+  // prepare a random number generator
   std::random_device rd;
   std::default_random_engine eng(rd());
   std::uniform_real_distribution<> distr(0, 1);

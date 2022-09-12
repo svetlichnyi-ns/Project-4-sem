@@ -7,7 +7,6 @@
 #include <cmath>
 #include "blocks.h"
 
-// this function calculates blocks' velocities after their absolutely elastic collision
 sf::Vector2f elastic_collision (sf::Vector2f initial_velocities, sf::Vector2i masses) {
   sf::Vector2f final_velocities;
   // these formulas are the result of solving a system of equations, consisting of the laws of conservation of energy and momentum
