@@ -1,38 +1,25 @@
 #include <iostream>
 #include <iomanip>
 #include <chrono>
-#include <cstdlib>
+#include <vector>
 #include "spigot.h"
 
 int spigot() {
-  std::cout << "Enter the number of digits in number PI that you want to calculate (two or more): ";
+  std::cout << "Enter the number of digits in number PI that you want to calculate (not less than 2 and not more than 9'000): ";
   int N;
   std::cin >> N;
   if (N < 2) {
     std::cerr << "This number should be not less than two (not less than one digit after the decimal point).\n";
     return -1;
   }
+  if (N > 9'000) {
+    std::cerr << "This number should be not more than 9'000 (otherwise, the program will not be able to calculate all digits).\n";
+    return -1;
+  }
+
   int size = 10 * N / 3;  // the number of columns in a table (it depends on N)
-  int* digits_of_pi = (int*) malloc (N * sizeof(int));  // allocation of memory for the array of digits of PI
-  if (digits_of_pi == NULL) {
-    std::cerr << "Failed to allocate memory via malloc() for an array <<digits_of_pi>>\n";
-    return -1;
-  }
-  int** table = (int**) malloc ((4 * N) * sizeof(int*));  // allocation of memory for a two-dimensional array (table)
-  if (table == NULL) {
-    std::cerr << "Failed to allocate memory via malloc() for an array <<table>>\n";
-    free(digits_of_pi);
-    return -1;
-  }
-  for (int i = 0; i < 4 * N; i++) {
-    table[i] = (int*) malloc (size * sizeof(int));
-    if (table[i] == NULL) {
-      free(digits_of_pi);
-      free(table);
-      std::cerr << "Failed to allocate memory via malloc() for the " << i << "th one-dimensional array: <<table[" << i << "]\n";
-      return -1;
-    }
-  }
+  std::vector<int> digits_of_pi(N);  // create a vector of digits of PI
+  std::vector<std::vector<int>> table(4 * N, std::vector<int>(size));  // create a table that is necessary for calculation of PI's digits
   std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();  // start the timer
   for (int i = 0; i < size; i++)  // initialization of the zeroth row by twenties
     table[0][i] = 20;
@@ -76,10 +63,5 @@ int spigot() {
   std::setprecision(10);
   std::cout << "; it took " << (std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count()) / 1000000.l;
   std::cout << " seconds to calculate PI.\n\n";
-  // memory release
-  free(digits_of_pi);
-  for (int i = 0; i < 4 * N; i++)
-    free(table[i]);
-  free(table);
   return 0;
 }
