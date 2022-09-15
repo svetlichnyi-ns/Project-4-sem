@@ -28,8 +28,10 @@ As a result, I created a program that supports eight methods of computation of n
 7) Monte-Carlo method;  
 8) Viete's formula.  
   
-Before running a project, you should install the SFML library. For example, on Linux you should write the following: sudo apt-get install libsfml-dev  
+Before running a project, you should install the SFML library. For example, on Linux you should write the following:  sudo apt-get install libsfml-dev  
+Then clone this repository to create a local copy on your computer: git clone https://github.com/svetlichnyi-ns/Project-4-sem  
 So as to run a project, enter the following to the console:  
 make  
 ./project  
-If you're willing to delete object files and executable file, enter: make clean
+If you're willing to delete object files and an executable file, enter:  
+make clean
