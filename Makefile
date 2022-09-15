@@ -16,4 +16,4 @@ $(OBJECTS): $(SOURCES)
 	$(CC) -c $(CFLAGS) $(SOURCES)
 
 clean:
-	rm $(OBJECTS) $(EXECUTABLE)
+	rm -f $(OBJECTS) $(EXECUTABLE)
