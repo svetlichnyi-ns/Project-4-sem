@@ -3,21 +3,30 @@
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
 #include <random>
-#include <pthread.h>
+#include <thread>
+#include <mutex>
 #include <iostream>
 #include <iomanip>
 #include <chrono>
 #include <cmath>
-#include <cstdlib>
+#include <vector>
 #include "Buffon.h"
 
 int count;  // the number of intersections of needles and lines
-sf::VertexArray needles;  // an array of vertices, forming needles
-pthread_mutex_t mutex;  // the presence of a critical section requires the synchronization of threads
+sf::VertexArray needles(sf::Lines, 0);  // an array of vertices, forming needles
+std::mutex mutex;  // the presence of a critical section requires the synchronization of threads
 
-void* spreader(void* args) {  // a function, called on a thread
+// the arguments of a function, called on a thread, are "wrapped" in a structure
+typedef struct ArgumentsForSpreader {
+  int st_from;  // starting needle number
+  int st_to;  // ending needle number
+  float st_width;  // the interval between neighbouring lines
+  float st_length;  // the length of each needle
+  int st_NumOfLines;  // the total number of lines
+} Args;
+
+void spreader(void* args) {  // a function, called on a thread
   Args* arg = reinterpret_cast<Args*> (args);
-  // make preparations for a random number generator
   std::random_device rd;
   std::default_random_engine eng(rd());
   std::uniform_real_distribution<> distr(0, 1);
@@ -35,10 +44,7 @@ void* spreader(void* args) {  // a function, called on a thread
     needles[2*j + 1].color = sf::Color::Black;
   }
   // the beginning of the access to the critical section, i.e. to a variable 'count'
-  if (pthread_mutex_lock(&mutex) != 0) {
-    std::cerr << "Failed to lock a mutex!\n";
-    return NULL;
-  }
+  mutex.lock();
   // checking whether the needle crossed the line
   for (int j = arg->st_from; j < arg->st_to; j++) {
     for (int i = 0; i < arg->st_NumOfLines; i++) {
@@ -52,16 +58,13 @@ void* spreader(void* args) {  // a function, called on a thread
     }
   }
   // the end of the access to the critical section, i.e. to a variable 'count'
-  if (pthread_mutex_unlock(&mutex) != 0) {
-    std::cerr << "Failed to unlock a mutex!\n";
-    return NULL;
-  }
-  return NULL;
+  mutex.unlock();
+  return;
 }
 
 int Buffon_needle() {
   float width;
-  std::cout << "Enter the interval between neighbouring lines: ";
+  std::cout << "Enter the interval between neighbouring lines (don't choose it too small: around 100 will be appropriate): ";
   std::cin >> width;
   if (width <= 0) {
     std::cerr << "The interval between neighbouring lines must be positive.\n";
@@ -69,15 +72,19 @@ int Buffon_needle() {
   }
 
   int NumOfNeedles;
-  std::cout << "Enter the number of needles you want to scatter: ";
+  std::cout << "Enter the number of needles you want to scatter (no more than 25'000'000): ";
   std::cin >> NumOfNeedles;
   if (NumOfNeedles <= 0) {
     std::cerr << "The number of needles must be positive.\n";
     return -1;
   }
+  if (NumOfNeedles > 25'000'000) {
+    std::cerr << "The program can't cope with so many needles.\n";
+    return -1;
+  }
 
   float length;
-  std::cout << "Enter the length of each needle: ";
+  std::cout << "Enter the length of each needle (choose it commensurate with the interval between adjacent lines): ";
   std::cin >> length;
   if (length <= 0) {
     std::cerr << "The length of each needle must be positive.\n";
@@ -85,10 +92,14 @@ int Buffon_needle() {
   }
 
   int NumOfThreads;
-  std::cout << "Enter the preferable number of threads: ";
+  std::cout << "Enter the preferable number of threads (no more than 25'000): ";
   std::cin >> NumOfThreads;
   if (NumOfThreads <= 0) {
     std::cerr << "The number of threads must be positive.\n";
+    return -1;
+  }
+  if (NumOfThreads > 25'000) {
+    std::cerr << "The program does not support so many threads.\n";
     return -1;
   }
 
@@ -105,74 +116,38 @@ int Buffon_needle() {
     lines[2*i + 1].position = sf::Vector2f(1920.f, (float) i * width);
     lines[2*i + 1].color = sf::Color::Blue;
   }
-  // the initialization of the mutex
-  if (pthread_mutex_init(&mutex, NULL) != 0) {
-    std::cerr << "Failed to initialize a mutex!\n";
-    return -1;
-  }
-  needles.setPrimitiveType(sf::Lines);  // set a primitive type for the array of vertices, forming needles
-  needles.resize(2*NumOfNeedles);  // new size of the array of vertices, forming needles
+  
+  // new size of the array of vertices, forming needles
+  needles.resize(2*NumOfNeedles);
   int NumOfNeedlesPerThread = NumOfNeedles / NumOfThreads;  // the number of needles that each individual thread must scatter
-  // create an array of threads' identificators
-  pthread_t* threads = (pthread_t*) malloc (NumOfThreads * sizeof(pthread_t));
-  if (threads == NULL) {
-    std::cerr << "Failed to allocate memory for an array of threads' identificators via malloc()\n";
-    return -1;
-  }
-  // create an array of structures
-  Args* ArrayOfStructures = (Args*) malloc (NumOfThreads * sizeof(Args));
-  if (ArrayOfStructures == NULL) {
-    std::cerr << "Failed to allocate memory for an array of structures via malloc()\n";
-    free(threads);
-    return -1;
-  }
+  std::vector <std::thread> threads(NumOfThreads);  // create a vector of threads
+  std::vector <Args> VectorOfStructures(NumOfThreads);  // create a vector of structures
   // fill in the fields of all structures
   for (int j = 0; j < NumOfThreads; j++) {
     // needles are subsequently and uniformly distributed among all threads
-    ArrayOfStructures[j].st_from = j * NumOfNeedlesPerThread;
-    ArrayOfStructures[j].st_to = (j + 1) * NumOfNeedlesPerThread;
-    ArrayOfStructures[j].st_length = length;
-    ArrayOfStructures[j].st_width = width;
-    ArrayOfStructures[j].st_NumOfLines = NumOfLines;
+    VectorOfStructures[j].st_from = j * NumOfNeedlesPerThread;
+    VectorOfStructures[j].st_to = (j + 1) * NumOfNeedlesPerThread;
+    VectorOfStructures[j].st_length = length;
+    VectorOfStructures[j].st_width = width;
+    VectorOfStructures[j].st_NumOfLines = NumOfLines;
     // creation of threads
-    if (pthread_create(&threads[j], NULL, spreader, &ArrayOfStructures[j]) != 0) {
-      std::cerr << "Failed to create a thread!\n";
-      free(threads);
-      free(ArrayOfStructures);
-      return -1;
-    }
+    threads[j] = std::thread(spreader, &VectorOfStructures[j]);
   }
   // waiting for all threads to finish
   for (int j = 0; j < NumOfThreads; j++) {
-    if (pthread_join(threads[j], NULL) != 0) {
-      std::cerr << "Failed to join a thread!\n";
-      free(threads);
-      free(ArrayOfStructures);
-      return -1;
-    }
+    threads[j].join();
   }
-  
+
   // scatter the remaining needles (if NumOfNeedles isn't evenly divisible by NumOfThreads)
   if (NumOfNeedles % NumOfThreads != 0) {
-    pthread_t remaining_needles;
     Args RemainingNeedles;
     RemainingNeedles.st_from = NumOfThreads * NumOfNeedlesPerThread;
     RemainingNeedles.st_to = NumOfNeedles;
     RemainingNeedles.st_length = length;
     RemainingNeedles.st_width = width;
     RemainingNeedles.st_NumOfLines = NumOfLines;
-    if (pthread_create(&remaining_needles, NULL, spreader, &RemainingNeedles) != 0) {
-      std::cerr << "Failed to create a thread!\n";
-      free(threads);
-      free(ArrayOfStructures);
-      return -1;
-    }
-    if (pthread_join(remaining_needles, NULL) != 0) {
-      std::cerr << "Failed to join a thread!\n";
-      free(threads);
-      free(ArrayOfStructures);
-      return -1;
-    }
+    std::thread remaining_needles(spreader, &RemainingNeedles);
+    remaining_needles.join();
   }
   std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();  // stop the timer
   // calculate number PI, based on the probability for each needle to cross any line and on current geometrical parameters
@@ -181,14 +156,6 @@ int Buffon_needle() {
   std::cout << "The calculation error is: " << fabsl(pi - M_PIl) << ";\n";
   std::cout << "It took " << (std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count()) / 1'000'000'000.l << " seconds to calculate it.\n\n";
 
-  // the destroyment of the mutex
-  if (pthread_mutex_destroy(&mutex) != 0) {
-    std::cerr << "Failed to destroy a mutex!\n";
-    free(threads);
-    free(ArrayOfStructures);
-    return -1;
-  }
-  
   sf::RenderWindow window(sf::VideoMode(1920, 1080), "Buffon's needle");
   window.clear(sf::Color::White);
   window.draw(lines);
@@ -201,7 +168,5 @@ int Buffon_needle() {
         window.close();
     }
   }
-  free(threads);
-  free(ArrayOfStructures);
   return 0;
 }
