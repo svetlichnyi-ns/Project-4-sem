@@ -83,7 +83,6 @@ int integral_computation() {
     if (methods_0_4(i, 0.l, 0.5l, function_2) == -1)
       return -1;
   }
-  Romberg(0.l, 0.5l, function_2);
   if (integrals_Monte_Carlo(0.l, 0.5l, function_2) == -1)
     return -1;
   std::cout << "The third integral expression\n";
@@ -102,55 +101,80 @@ void integral_0_4(Args_0_4* arg) {
   switch (arg->st_method) {
     case left_rectangle:
     {
+      long i = 1L;  // iterator
       long double x = arg->st_left;
-      while (x < arg->st_right) {
+      do {
         sum += arg->st_func(x);
-        x += arg->st_step;
-      };
+        x = arg->st_left + i * arg->st_step;
+        i++;
+      } while (x + arg->st_step <= arg->st_right);  // we prevent this cycle from completing its last iteration
+      sum *= arg->st_step;
+      sum += arg->st_func(x) * (arg->st_right - x);  // we add the area of the last small "left rectangle"
       break;
     }
     case right_rectangle:
     {
+      long i = 2L;  // iterator
       long double x = arg->st_left + arg->st_step;
-      while (x < arg->st_right) {
+      do {
         sum += arg->st_func(x);
-        x += arg->st_step;
-      };
+        x = arg->st_left + i * arg->st_step;
+        i++;
+      } while (x <= arg->st_right);  // we prevent this cycle from completing its last iteration
+      sum *= arg->st_step;
+      sum += arg->st_func(arg->st_right) * (arg->st_right - x);  // we add the area of the last small "right rectangle"
       break;
     }
     case middle_rectangle:
     {
+      long i = 1L;  // iterator
       long double x = arg->st_left + 0.5l * arg->st_step;
-      while (x < arg->st_right) {
+      do {
         sum += arg->st_func(x);
-        x += arg->st_step;
-      };
+        x = arg->st_left + 0.5l * arg->st_step + i * arg->st_step;
+        i++;
+      } while (x + 0.5l * arg->st_step <= arg->st_right);  // we prevent this cycle from completing its last iteration
+      sum *= arg->st_step;
+      long double x_center = 0.5l * ((x - 0.5l * arg->st_step) + (arg->st_right));
+      sum += 2.l * (arg->st_right - x_center) * arg->st_func(x_center);  // we add the area of the last small "middle rectangle"
       break;
     }
     case trapezoidal:
     {
+      long i = 1L;  // iterator
       long double x_1 = arg->st_left;
       long double x_2 = arg->st_left + arg->st_step;
-      while (x_2 < arg->st_right) {
+      do {
         sum += arg->st_func(x_1) + arg->st_func(x_2);
-        x_1 += arg->st_step;
-        x_2 += arg->st_step;
-      };
+        x_1 = arg->st_left + i * arg->st_step;
+        x_2 = x_1 + arg->st_step;
+        i++;
+      } while (x_2 <= arg->st_right);  // we prevent this cycle from completing its last iteration
       sum /= 2.l;
+      sum *= arg->st_step;
+      sum += 0.5l * (arg->st_right - x_1) * (arg->st_func(x_1) + arg->st_func(arg->st_right));  // we add the area of the last small trapezoid
       break;
     }
     case Simpson:
     {
+      long i = 1L;  // iterator
       long double x_left = arg->st_left;
       long double x_middle = arg->st_left + 0.5l * arg->st_step;
       long double x_right = arg->st_left + arg->st_step;
-      while (x_right < arg->st_right) {
+      do {
         sum += arg->st_func(x_left) + 4.l * arg->st_func(x_middle) + arg->st_func(x_right);
-        x_left += arg->st_step;
-        x_middle += arg->st_step;
-        x_right += arg->st_step;
-      };
+        x_left = arg->st_left + i * arg->st_step;
+        x_middle = x_left + 0.5l * arg->st_step;
+        x_right = x_left + arg->st_step;
+        i++;
+      } while (x_right <= arg->st_right);  // we prevent this cycle from completing its last iteration
       sum /= 6.l;
+      sum *= arg->st_step;
+      // make preparations for a new "parabola"
+      long double x_new_left = x_left;
+      long double x_new_right = arg->st_right;
+      long double x_new_middle = 0.5l * (x_new_left + x_new_right);
+      sum += (x_new_right - x_new_left) * (arg->st_func(x_new_left) + 4.l * arg->st_func(x_new_middle) + arg->st_func(x_new_right)) / 6.l;  // we add the area of the last small "parabola"
       break;
     }
     default:
@@ -159,7 +183,7 @@ void integral_0_4(Args_0_4* arg) {
   }
   // the beginning of the access to the critical section, i.e. to a variable 'result_0_4'
   mutex_0_4.lock();
-  result_0_4 += sum * arg->st_step;
+  result_0_4 += sum;
   // the end of the access to the critical section, i.e. to a variable 'result_0_4'
   mutex_0_4.unlock();
   return;
@@ -173,14 +197,17 @@ void integral_6_1(Args_6_1* arg) {
   std::uniform_real_distribution<> distr(0, 1);
   // on each interval of integration, a thread chooses an arbitrary abscissa
   long double x_left = arg->st_left;
-  while (x_left < arg->st_right) {
+  do {
     long double x_random = x_left + arg->st_step * distr(eng);
     sum += arg->st_func(x_random);
     x_left += arg->st_step;
-  }
+  } while (x_left + arg->st_step <= arg->st_right);  // we prevent this cycle from completing its last iteration
+  sum *= arg->st_step;
+  long double x_new_random = x_left + (arg->st_right - x_left) * distr(eng);
+  sum += arg->st_func(x_new_random) * (arg->st_right - x_left); // we add a random remaining area
   // the beginning of the access to the critical section, i.e. to a variable 'answer_6_1'
   mutex_6_1.lock();
-  answer_6_1 += sum * arg->st_step;
+  answer_6_1 += sum;
   // the end of the access to the critical section, i.e. to a variable 'answer_6_1'
   mutex_6_1.unlock();
   return;
@@ -250,13 +277,20 @@ int methods_0_4(methods_t method, long double a, long double b, long double (*fu
     std::cerr << "The step is too small: the program can't cope with so many segments of integration.\n";
     return -1;
   }
+  
+  long double LengthForEachThread = (b - a) / (long double) NumOfThreads;
+  if (10.l * step >= LengthForEachThread) {  // each thread should own, at least, 10 subsegments of integration
+    std::cerr << "In this scenario each thread owns too few subsegments of integration.\n";
+    std::cerr << "Decrease the number of threads or choose a smaller step of integration.\n";
+    return -1;
+  }
+
   std::cout << "Wait for the results, please...\n";
   // start the timer
   std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
   result_0_4 = 0.l;  // set an initial value of the integral
   std::vector<std::thread> threads(NumOfThreads);  // create a vector of threads
   std::vector<Args_0_4> VectorOfStructures(NumOfThreads);  // create a vector of structures
-  long double LengthForEachThread = (b - a) / (long double) NumOfThreads;
   for (int j = 0; j < NumOfThreads; j++) {
     VectorOfStructures[j].st_left = a + j * LengthForEachThread;
     VectorOfStructures[j].st_right = a + (j + 1) * LengthForEachThread;
@@ -328,12 +362,20 @@ int integrals_Monte_Carlo(long double a, long double b, long double (*func) (lon
     std::cerr << "The step is too small: the program can't cope with so many segments of integration.\n";
     return -1;
   }
+
+  long double LengthForEachThread = (b - a) / (long double) NumOfThreads_1;
+  if (10.l * step >= LengthForEachThread) {  // each thread should own, at least, 10 subsegments of integration
+    std::cerr << "In this scenario each thread owns too few subsegments of integration.\n";
+    std::cerr << "Decrease the number of threads or choose a smaller step of integration.\n";
+    return -1;
+  }
+
   std::cout << "Wait for the results, please...\n";
   std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();  // start the timer
   answer_6_1 = 0;  // clear the variable before the experiment
   std::vector<std::thread> threads_1(NumOfThreads_1);  // create a vector of threads
   std::vector<Args_6_1> VectorOfStructures_1(NumOfThreads_1);  // create a vector of structures
-  long double LengthForEachThread = (b - a) / (long double) NumOfThreads_1;
+  //long NumOfSegments = (long) ((b - a) / step);
   for (int j = 0; j < NumOfThreads_1; j++) {
     VectorOfStructures_1[j].st_left = a + j * LengthForEachThread;
     VectorOfStructures_1[j].st_right = a + (j + 1) * LengthForEachThread;
