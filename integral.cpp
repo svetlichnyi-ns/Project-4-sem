@@ -375,7 +375,6 @@ int integrals_Monte_Carlo(long double a, long double b, long double (*func) (lon
   answer_6_1 = 0;  // clear the variable before the experiment
   std::vector<std::thread> threads_1(NumOfThreads_1);  // create a vector of threads
   std::vector<Args_6_1> VectorOfStructures_1(NumOfThreads_1);  // create a vector of structures
-  //long NumOfSegments = (long) ((b - a) / step);
   for (int j = 0; j < NumOfThreads_1; j++) {
     VectorOfStructures_1[j].st_left = a + j * LengthForEachThread;
     VectorOfStructures_1[j].st_right = a + (j + 1) * LengthForEachThread;
